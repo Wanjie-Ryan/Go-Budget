@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type healthCheck struct{
+type healthCheck struct {
 	Health bool `json:"health"`
 }
 

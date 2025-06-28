@@ -9,6 +9,7 @@ import (
 	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 // creating a reusable struct
@@ -46,8 +47,9 @@ func main() {
 		server:  e,
 		handler: h,
 	}
-	e.GET("/health", h.HealthCheck)
 	fmt.Println(app)
+	e.Use(middleware.Logger())
+	app.routes(h)
 	port := os.Getenv("APP_PORT")
 	appAddress := fmt.Sprintf("localhost:%s", port)
 	// the code below is wrapped in e.logger.Fatal() in a case where it returns an error, echo will log the error message, and exit your program with a non zero status code

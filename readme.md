@@ -57,3 +57,7 @@ c.N++
 
 Value Receiver --> photocopying sth; you change your copy (photocopy) but the original stays untouched
 Pointer receiver --> writing in the original recipe book; your edits stick
+
+# Installing a middleware for logging requests
+
+go get github.com/labstack/echo/v4/middleware
