@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Wanjie-Ryan/Go-Budget/cmd/api/handlers"
+	middlewares "github.com/Wanjie-Ryan/Go-Budget/cmd/api/middleware"
 	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -49,6 +50,7 @@ func main() {
 	}
 	fmt.Println(app)
 	e.Use(middleware.Logger())
+	e.Use(middlewares.CustomMiddleware)
 	app.routes(h)
 	port := os.Getenv("APP_PORT")
 	appAddress := fmt.Sprintf("localhost:%s", port)
