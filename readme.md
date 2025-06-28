@@ -61,3 +61,10 @@ Pointer receiver --> writing in the original recipe book; your edits stick
 # Installing a middleware for logging requests
 
 go get github.com/labstack/echo/v4/middleware
+
+
+## Project Roadmap
+![alt text](image.png)
+
+# Database migration
+Code that brings your DB schema into sync with your models; creating tables, adding columns, indexes, etc etc
