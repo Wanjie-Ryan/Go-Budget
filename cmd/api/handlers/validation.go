@@ -11,9 +11,9 @@ import (
 
 // how the error will be structured
 type ValidationError struct {
-	Error     string `json:"error"`
-	Key       string `json:"key"`
-	Condition string `json:"condition"`
+	Error     string `json:"error"`     //human readable error, eg. email is required
+	Key       string `json:"key"`       // json key that failed
+	Condition string `json:"condition"` // which rule failed, required or email
 }
 
 // the function below will be returning an array of validationError
@@ -22,26 +22,32 @@ func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*Va
 
 	// create a new validator instance
 	var validate *validator.Validate
+	// enables the required tag on structs themselves, not just on fields
 	validate = validator.New(validator.WithRequiredStructEnabled())
 	var errors []*ValidationError
 	// run the validator, will check the validate tags
 	err := validate.Struct(payload)
 
 	// attempt to cast the errors to validationErrors
+	// if the error really came from validation, you get a slice of field level errors, otherwise ok is false
 	validationErrors, ok := err.(validator.ValidationErrors)
 	//loop through the validator errors
 	if ok {
-		// to get the full json payload that is failing
+		// to get the full json payload that is failing, enables you to read email instead of Email
 		reflected := reflect.ValueOf(payload)
 		// the _ is the index
 		for _, validationErr := range validationErrors {
 			fmt.Println(reflected.Type().FieldByName(validationErr.StructField()))
+
+			// find the struct field by the Go field name
 			field, _ := reflected.Type().FieldByName(validationErr.StructField())
 
+			// extract the json tag
 			key := field.Tag.Get("json")
 			if key == "" {
 				key = strings.ToLower(validationErr.StructField())
 			}
+			// which validation rule failed
 			condition := validationErr.Tag()
 
 			// building the error message
