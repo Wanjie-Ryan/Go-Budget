@@ -62,9 +62,19 @@ Pointer receiver --> writing in the original recipe book; your edits stick
 
 go get github.com/labstack/echo/v4/middleware
 
-
 ## Project Roadmap
+
 ![alt text](image.png)
 
 # Database migration
+
 Code that brings your DB schema into sync with your models; creating tables, adding columns, indexes, etc etc
+
+# Validator
+
+go get github.com/go-playground/validator/v10
+
+# POINTERS
+
+pointer holds the **memory address** of another value
+its like a signpost that says **go look over there** rather than carrying the value itself.
