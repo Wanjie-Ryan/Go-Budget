@@ -78,3 +78,6 @@ go get github.com/go-playground/validator/v10
 
 pointer holds the **memory address** of another value
 its like a signpost that says **go look over there** rather than carrying the value itself.
+
+# Interfaces
+they can hold anyhting, its like using the any keyword, they can hold any data type, just declared, and used later.
