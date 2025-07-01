@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"net/http"
+	// "net/http"
 
 	// handler "github.com/Wanjie-Ryan/Go-Budget/cmd/api/handlers"
 	request "github.com/Wanjie-Ryan/Go-Budget/cmd/api/requests"
+	"github.com/Wanjie-Ryan/Go-Budget/common"
 	// "github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
@@ -21,7 +22,8 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 	// bind body unmarshals the raw JSON into your payload object
 	if err := (&echo.DefaultBinder{}).BindBody(c, payload); err != nil {
 		fmt.Println("register error", err)
-		return c.JSON(http.StatusBadRequest, "Invalid request body")
+		// return c.JSON(http.StatusBadRequest, "Invalid request body")
+		return common.SendBadRequestResponse(c, "Invalid Request Body")
 	}
 	fmt.Println("register payload", payload)
 	// var validate *validator.Validate
@@ -49,11 +51,13 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 	fmt.Println("validation errors", validationErrors)
 	if validationErrors != nil {
 
-		return c.JSON(http.StatusBadRequest, validationErrors)
+		// return c.JSON(http.StatusBadRequest, validationErrors)
+		return common.SendFailedvalidationResponse(c, validationErrors)
 	}
 	// 2. validate request body
 	// 3. create user and other stuff
 	// return c.String(http.StatusOK, "Success")
 
-	return c.JSON(http.StatusCreated, "Registration Successful")
+	// return c.JSON(http.StatusCreated, "Registration Successful")
+	return common.SendSuccessResponse(c, "Registration Successful", payload)
 }

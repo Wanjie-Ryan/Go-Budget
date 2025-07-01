@@ -5,26 +5,27 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
 // how the error will be structured
-type ValidationError struct {
-	Error     string `json:"error"`     //human readable error, eg. email is required
-	Key       string `json:"key"`       // json key that failed
-	Condition string `json:"condition"` // which rule failed, required or email
-}
+// type ValidationError struct {
+// 	Error     string `json:"error"`     //human readable error, eg. email is required
+// 	Key       string `json:"key"`       // json key that failed
+// 	Condition string `json:"condition"` // which rule failed, required or email
+// }
 
 // the function below will be returning an array of validationError
 // the function will accept the echo context and the payload as arguments
-func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*ValidationError {
+func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*common.ValidationError {
 
 	// create a new validator instance
 	var validate *validator.Validate
 	// enables the required tag on structs themselves, not just on fields
 	validate = validator.New(validator.WithRequiredStructEnabled())
-	var errors []*ValidationError
+	var errors []*common.ValidationError
 	// run the validator, will check the validate tags
 	err := validate.Struct(payload)
 
@@ -64,7 +65,7 @@ func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*Va
 			// fmt.Println(validationErr.ActualTag()) // json field that failed
 			// fmt.Println("failed field",validationErr.Field())
 			// //build own error object
-			currentValidationError := &ValidationError{
+			currentValidationError := &common.ValidationError{
 				Error:     errMessage, // email is required
 				Key:       key,        // email
 				Condition: condition,  //required
