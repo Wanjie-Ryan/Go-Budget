@@ -62,7 +62,7 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 
 	userService := services.NewUserservice(h.DB)
 	userExist, err := userService.GetUserByEmail(payload.Email)
-	fmt.Println("does user exist by email",userExist, err)
+	fmt.Println("does user exist by email", userExist, err)
 	// 2. validate request body
 	// 3. create user and other stuff
 	// return c.String(http.StatusOK, "Success")
@@ -76,6 +76,8 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 
 		return common.SendBadRequestResponse(c, "Email already exists")
 	}
+
+	userService.RegisterUser(*payload)
 
 	// return c.JSON(http.StatusCreated, "Registration Successful")
 	return common.SendSuccessResponse(c, "Registration Successful", payload)

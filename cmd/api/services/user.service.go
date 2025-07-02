@@ -1,9 +1,11 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 
 	request "github.com/Wanjie-Ryan/Go-Budget/cmd/api/requests"
+	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/Wanjie-Ryan/Go-Budget/internal/models"
 	"gorm.io/gorm"
 )
@@ -17,7 +19,16 @@ func NewUserservice(db *gorm.DB) *Userservice {
 }
 
 func (u Userservice) RegisterUser(user request.RegisterUserRequest) (*models.UserModel, error) {
-	fmt.Println("do me")
+	// fmt.Println("do me")
+	hashedPassword, err := common.HashPassword(user.Password)
+	if err != nil {
+		fmt.Println(err)
+
+		// return nil,err
+		// errors.New is used to create custom errors
+		return nil, errors.New("failed to hash password")
+	}
+	fmt.Println("my hashed password", hashedPassword)
 	return nil, nil
 }
 
