@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"fmt"
+	// "net/http"
 
 	// "net/http"
 
@@ -77,8 +78,12 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 		return common.SendBadRequestResponse(c, "Email already exists")
 	}
 
-	userService.RegisterUser(*payload)
+	registeredUser, err := userService.RegisterUser(*payload)
+	if err != nil {
+		// return common.SendErrorResponse(c, err.Error(), http.StatusInternalServerError)
+		return common.SendServerErrorResponse(c, err.Error())
+	}
 
 	// return c.JSON(http.StatusCreated, "Registration Successful")
-	return common.SendSuccessResponse(c, "Registration Successful", payload)
+	return common.SendSuccessResponse(c, "Registration Successful", registeredUser)
 }

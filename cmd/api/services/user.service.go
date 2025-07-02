@@ -29,7 +29,25 @@ func (u Userservice) RegisterUser(user request.RegisterUserRequest) (*models.Use
 		return nil, errors.New("failed to hash password")
 	}
 	fmt.Println("my hashed password", hashedPassword)
-	return nil, nil
+
+	// instantiate the user model, and pass the DTO values into it
+	createUserModel := models.UserModel{
+		Firstname: &user.Firstname,
+		Lastname:  &user.Lastname,
+		Email:     user.Email,
+		Password:  hashedPassword,
+	}
+
+	// create/persist the user in the DB
+
+	result := u.db.Create(&createUserModel)
+
+	if result.Error != nil{
+		fmt.Println(result.Error)
+		return nil, errors.New("registration Failed")
+	}
+
+	return &createUserModel, nil
 }
 
 // the function below expects you to return a model of user, and an error
