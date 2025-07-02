@@ -55,3 +55,7 @@ func SendBadRequestResponse(c echo.Context, message string) error {
 func SendNotFoundResponse(c echo.Context, message string) error {
 	return SendErrorResponse(c, message, http.StatusNotFound)
 }
+
+func SendServerErrorResponse(c echo.Context, message string) error{
+	return SendErrorResponse(c, message, http.StatusInternalServerError)
+}

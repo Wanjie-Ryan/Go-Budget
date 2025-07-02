@@ -6,7 +6,9 @@ import (
 
 	// handler "github.com/Wanjie-Ryan/Go-Budget/cmd/api/handlers"
 	request "github.com/Wanjie-Ryan/Go-Budget/cmd/api/requests"
+	"github.com/Wanjie-Ryan/Go-Budget/cmd/api/services"
 	"github.com/Wanjie-Ryan/Go-Budget/common"
+
 	// "github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
@@ -54,6 +56,10 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 		// return c.JSON(http.StatusBadRequest, validationErrors)
 		return common.SendFailedvalidationResponse(c, validationErrors)
 	}
+
+	userService := services.NewUserservice(h.DB)
+	userExist, err := userService.GetUserByEmail(payload.Email)
+	fmt.Println("does user exist by email",userExist, err)
 	// 2. validate request body
 	// 3. create user and other stuff
 	// return c.String(http.StatusOK, "Success")

@@ -53,6 +53,15 @@ func (c \*Counter) IncrementPointer(){
 c.N++
 }
 
+**func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*common.ValidationError**
+
+the *Handler ensures that any method that uses the same struct in memory, and modifies any of its values, the changes stick.
+
+
+
+
+
+
 # Real World Analogy
 
 Value Receiver --> photocopying sth; you change your copy (photocopy) but the original stays untouched
@@ -84,3 +93,8 @@ its like a signpost that says **go look over there** rather than carrying the va
 they can hold anyhting, its like using the any keyword, they can hold any data type, just declared, and used later.
 
 **Cyclic imports are not allowed in go, like you common can't import handler, then later proceed to import handler in common.**
+
+echo's handler expects your handler to return an error
+func getWoo (c echo.context) err{
+return {....}
+}
