@@ -55,12 +55,7 @@ c.N++
 
 **func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*common.ValidationError**
 
-the *Handler ensures that any method that uses the same struct in memory, and modifies any of its values, the changes stick.
-
-
-
-
-
+the \*Handler ensures that any method that uses the same struct in memory, and modifies any of its values, the changes stick.
 
 # Real World Analogy
 
@@ -98,3 +93,7 @@ echo's handler expects your handler to return an error
 func getWoo (c echo.context) err{
 return {....}
 }
+
+# Go Password Hashing
+
+go get golang.org/x/crypto/bcrypt

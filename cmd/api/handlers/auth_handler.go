@@ -1,13 +1,16 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
+
 	// "net/http"
 
 	// handler "github.com/Wanjie-Ryan/Go-Budget/cmd/api/handlers"
 	request "github.com/Wanjie-Ryan/Go-Budget/cmd/api/requests"
 	"github.com/Wanjie-Ryan/Go-Budget/cmd/api/services"
 	"github.com/Wanjie-Ryan/Go-Budget/common"
+	"gorm.io/gorm"
 
 	// "github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -63,6 +66,16 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 	// 2. validate request body
 	// 3. create user and other stuff
 	// return c.String(http.StatusOK, "Success")
+
+	// how to check the type of an error, specifically, in our case, email not found
+
+	// the check below says that (ORIGINALLY)  if the email is NOT found, then negate that to false, and throw a common error saying email already exists
+	// if no match is found, gorm sets result.Error to gorm.ErrRecordNotFound
+
+	if errors.Is(err, gorm.ErrRecordNotFound) == false {
+
+		return common.SendBadRequestResponse(c, "Email already exists")
+	}
 
 	// return c.JSON(http.StatusCreated, "Registration Successful")
 	return common.SendSuccessResponse(c, "Registration Successful", payload)
