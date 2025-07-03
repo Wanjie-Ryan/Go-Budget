@@ -124,3 +124,13 @@ Simple Mail Transfer Protocol
    -- mail from <you@you.com> --> recipient to <bambam@hj.com> --> Data Stream the headers and body of your email, ending with a single line containing a dot
 5. Quit
    -- client sends QUIT and both sides close the connection
+
+# Installing Mailing Services for Go
+
+Go Mail --> go get gopkg.in/gomail.v2
+
+use Mail Trap
+
+# Embed package
+
+-- help one bundle static HTML FILES, CSS, IMAGES, directly into your Go binary at compile time.

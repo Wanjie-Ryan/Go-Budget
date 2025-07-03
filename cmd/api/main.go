@@ -8,6 +8,7 @@ import (
 	"github.com/Wanjie-Ryan/Go-Budget/cmd/api/handlers"
 	middlewares "github.com/Wanjie-Ryan/Go-Budget/cmd/api/middleware"
 	"github.com/Wanjie-Ryan/Go-Budget/common"
+	"github.com/Wanjie-Ryan/Go-Budget/internal/mailer"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -41,8 +42,9 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+	appMailer := mailer.NewMailer()
 
-	h := handler.Handler{DB: db}
+	h := handler.Handler{DB: db, Mailer: appMailer}
 	app := Application{
 		logger:  e.Logger,
 		server:  e,

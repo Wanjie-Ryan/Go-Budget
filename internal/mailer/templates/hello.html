@@ -1,0 +1,23 @@
+<!-- defining the subject section -->
+<!-- marks everything between as a named sub-template called subject -->
+<!-- the . is the EmailData value; .Subject looks up EmailData.Subject, the parts with the . act as variables, which will be populated with dynamic data -->
+<!-- anything outside of define becomes the unnamed root template which is the html you'll send as the email body -->
+<!-- anything btn the curly braces is an action in Go's html/template language-->
+<!-- .Field insert a field from your data struct -->
+<!-- define "name" declares a sub-template -->
+<!-- template "other" embed another named template -->
+<!-- if .Condition, range .Items, logic and loops -->
+{{define "subject"}}{{.Subject}}{{end}}
+{{define "htmlBody"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h2>Hey there mate, welcome to The {{.AppName}}!!</h2>
+  </body>
+</html>
+{{end}}
