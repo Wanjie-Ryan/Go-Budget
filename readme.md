@@ -97,3 +97,30 @@ return {....}
 # Go Password Hashing
 
 go get golang.org/x/crypto/bcrypt
+
+# SMTP
+
+Simple Mail Transfer Protocol
+-- Standard protocol on the internet for sending email from one server to another, and from your app to an email server.
+
+# Role of SMTP
+
+1. client-server submission
+   -- when you hit send in your mail app, or from SMTP lib from your code, your mail client connects to an SMTP server to hand off message.
+
+2. Server to server relay
+   -- SMTP server may connect to other SMTP servers until it reaches the recipients mail server.
+
+3. Server to client retrieval
+
+# How SMTP works
+
+1. Connection
+   -- Client opens a TCP connection on port 25 for server to server
+2. Handshake
+   -- Client says **EHLO your-domain.com** and the server replies with the list of extensions it supports. (TLS, auth methods, size limits)
+3. Authentication
+4. Mail Transaction
+   -- mail from <you@you.com> --> recipient to <bambam@hj.com> --> Data Stream the headers and body of your email, ending with a single line containing a dot
+5. Quit
+   -- client sends QUIT and both sides close the connection
