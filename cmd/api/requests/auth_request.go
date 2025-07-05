@@ -1,5 +1,6 @@
 package request
 
+// this acts like some DTO
 // defines the shape of the JSON payload one expects from client to send when they register
 type RegisterUserRequest struct {
 	Firstname string `json:"firstname" validate:"required"`

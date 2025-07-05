@@ -110,7 +110,20 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 // CREATING THE LOGIN  HANDLER
 func (h *Handler) Loginhandler(c echo.Context) error{
 	// bind data
+	loginPayload := new(request.LoginUserRequest)
+
+	if err :=(&echo.DefaultBinder{}).BindBody(c, loginPayload);
+	err !=nil{
+		fmt.Println("login error", err)
+		return common.SendBadRequestResponse(c, "Invalid Request Body")
+	}
+	fmt.Println("login payload", loginPayload)
 	// validate data
+	loginValidationErrors := h.ValidateBodyRequest(c, *loginPayload)
+	fmt.Println("login validation errors", loginValidationErrors)
+	if loginValidationErrors !=nil{
+		return common.SendFailedvalidationResponse(c, loginValidationErrors)
+	}
 	// if the user with supplied mail exist
 	// compare the passwords
 	// return response with user token

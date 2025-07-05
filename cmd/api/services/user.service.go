@@ -42,7 +42,7 @@ func (u Userservice) RegisterUser(user request.RegisterUserRequest) (*models.Use
 
 	result := u.db.Create(&createUserModel)
 
-	if result.Error != nil{
+	if result.Error != nil {
 		fmt.Println(result.Error)
 		return nil, errors.New("registration Failed")
 	}
