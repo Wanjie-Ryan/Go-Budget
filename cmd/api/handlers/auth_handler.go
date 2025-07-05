@@ -106,3 +106,12 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 	// return c.JSON(http.StatusCreated, "Registration Successful")
 	return common.SendSuccessResponse(c, "Registration Successful", registeredUser)
 }
+
+// CREATING THE LOGIN  HANDLER
+func (h *Handler) Loginhandler(c echo.Context) error{
+	// bind data
+	// validate data
+	// if the user with supplied mail exist
+	// compare the passwords
+	// return response with user token
+}
