@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"html/template"
 	"os"
-	"path/filepath"
+	"path"
+	// "path/filepath"
 	"strconv"
 
 	"gopkg.in/gomail.v2"
@@ -51,7 +52,8 @@ func NewMailer() Mailer {
 // will be used to send emails
 func (mail *Mailer) Send(recipient string, templateFile string, data EmailData) error {
 	// generate an absolute path like templates/hello.html
-	absolutePath := filepath.Join("templates", templateFile)
+	// absolutePath := filepath.Join("templates", templateFile)
+	absolutePath := path.Join("templates", templateFile)
 	// reads the file out of the embedded FS and parses any {{}} directives in it.
 	tmpl, err := template.ParseFS(templateFS, absolutePath)
 

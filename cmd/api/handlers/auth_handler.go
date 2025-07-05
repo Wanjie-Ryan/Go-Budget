@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"fmt"
+
 	// "net/http"
 
 	// "net/http"
@@ -11,6 +12,7 @@ import (
 	request "github.com/Wanjie-Ryan/Go-Budget/cmd/api/requests"
 	"github.com/Wanjie-Ryan/Go-Budget/cmd/api/services"
 	"github.com/Wanjie-Ryan/Go-Budget/common"
+	"github.com/Wanjie-Ryan/Go-Budget/internal/mailer"
 	"gorm.io/gorm"
 
 	// "github.com/go-playground/validator/v10"
@@ -82,6 +84,23 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 	if err != nil {
 		// return common.SendErrorResponse(c, err.Error(), http.StatusInternalServerError)
 		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	mailData := mailer.EmailData{
+		Subject: "Welcome to Budget Tracker",
+		Meta: struct {
+			FirstName string
+			LoginLink string
+		}{
+			FirstName: *registeredUser.Firstname,
+			LoginLink: "#",
+		},
+	}
+
+	err = h.Mailer.Send(payload.Email, "welcome.html", mailData)
+	if err != nil {
+		fmt.Println("mail error", err)
+		// return err
 	}
 
 	// return c.JSON(http.StatusCreated, "Registration Successful")

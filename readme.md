@@ -134,3 +134,5 @@ use Mail Trap
 # Embed package
 
 -- help one bundle static HTML FILES, CSS, IMAGES, directly into your Go binary at compile time.
+
+// in Go types live under package scope
