@@ -108,12 +108,11 @@ func (h *Handler) Registerhandler(c echo.Context) error {
 }
 
 // CREATING THE LOGIN  HANDLER
-func (h *Handler) Loginhandler(c echo.Context) error{
+func (h *Handler) Loginhandler(c echo.Context) error {
 	// bind data
 	loginPayload := new(request.LoginUserRequest)
 
-	if err :=(&echo.DefaultBinder{}).BindBody(c, loginPayload);
-	err !=nil{
+	if err := (&echo.DefaultBinder{}).BindBody(c, loginPayload); err != nil {
 		fmt.Println("login error", err)
 		return common.SendBadRequestResponse(c, "Invalid Request Body")
 	}
@@ -121,12 +120,12 @@ func (h *Handler) Loginhandler(c echo.Context) error{
 	// validate data
 	loginValidationErrors := h.ValidateBodyRequest(c, *loginPayload)
 	fmt.Println("login validation errors", loginValidationErrors)
-	if loginValidationErrors !=nil{
+	if loginValidationErrors != nil {
 		return common.SendFailedvalidationResponse(c, loginValidationErrors)
 	}
 
+	// on the left side, they are not only variables, but also they are things that you are expecting from the function you created in the other file, example this specific function was only meant to return userService alone, no err
 	userService := services.NewUserservice(h.DB)
-
 
 	// if the user with supplied mail exist
 
@@ -144,14 +143,19 @@ func (h *Handler) Loginhandler(c echo.Context) error{
 
 	// compare the passwords
 	// if the comparison of the passwords do not match (false) return an error
-	if common.CheckPasswordHash(loginPayload.Password, user.Password) == false{
+	if common.CheckPasswordHash(loginPayload.Password, user.Password) == false {
 		return common.SendBadRequestResponse(c, "Invalid Email or Password")
 	}
 
 	// generate access token
 
+	accessToken, refreshToken, err := common.GenerateJWT(*user)
 
+	if err != nil {
+		return common.SendServerErrorResponse(c, err.Error())
+	}
 
 	// return response with user token
-	return common.SendSuccessResponse(c, "Login Successful", user)
+	// return common.SendSuccessResponse(c, "Login Successful", user)
+	return common.SendSuccessResponse(c, "Login Successful", map[string]interface{}{"access_token": accessToken, "refresh_token": refreshToken, "user": user})
 }
