@@ -124,8 +124,34 @@ func (h *Handler) Loginhandler(c echo.Context) error{
 	if loginValidationErrors !=nil{
 		return common.SendFailedvalidationResponse(c, loginValidationErrors)
 	}
+
+	userService := services.NewUserservice(h.DB)
+
+
 	// if the user with supplied mail exist
+
+	user, err := userService.GetUserByEmail(loginPayload.Email)
+
+	// errors.Is is a way to check if a certain error matches a specific known error type, even if its wrapped inside other errors.
+	// when you use GORM and you try to query for sth in the DB, if no record is found, GORM returns an error called gorm.ErrRecordNotFound
+	// when the condition below is set to TRUE, it means that the email WAS NOT FOUND, otherwise when FALSE, it means user with that email ALREADY EXISTS (Gorm did not return 'record not found')
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+
+		return common.SendBadRequestResponse(c, "Invalid Email or Password")
+	}
+
+	fmt.Println("retrieved user", *user)
+
 	// compare the passwords
+	// if the comparison of the passwords do not match (false) return an error
+	if common.CheckPasswordHash(loginPayload.Password, user.Password) == false{
+		return common.SendBadRequestResponse(c, "Invalid Email or Password")
+	}
+
+	// generate access token
+
+
+
 	// return response with user token
-	return nil
+	return common.SendSuccessResponse(c, "Login Successful", user)
 }

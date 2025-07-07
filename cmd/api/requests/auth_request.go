@@ -11,6 +11,6 @@ type RegisterUserRequest struct {
 
 // minimum length of password is 4
 type LoginUserRequest struct {
-	Email    string `json:"email" validate:"required, email"`
+	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=4"`
 }

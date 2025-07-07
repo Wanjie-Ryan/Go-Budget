@@ -136,3 +136,7 @@ use Mail Trap
 -- help one bundle static HTML FILES, CSS, IMAGES, directly into your Go binary at compile time.
 
 // in Go types live under package scope
+
+# Installing JWT in Go
+
+go get -u github.com/golang-jwt/jwt/v5
