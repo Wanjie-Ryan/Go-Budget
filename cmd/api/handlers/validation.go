@@ -51,14 +51,19 @@ func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*co
 			// which validation rule failed
 			condition := validationErr.Tag()
 
+			// extracting the param from the error
+			param := validationErr.Param()
 			// building the error message
 			errMessage := key + " field is " + condition
+
+			// switch the condition, if condition is required, show this message, if email show this message, etc etc
 
 			switch condition {
 			case "required":
 				errMessage = key + " is required"
 			case "email":
 				errMessage = key + " must be a valid email address"
+			case "min": errMessage = key + " must be at least " + param + " characters long"
 			}
 
 			// fmt.Println(validationErr.Tag()) // what failed

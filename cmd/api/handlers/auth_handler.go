@@ -127,4 +127,5 @@ func (h *Handler) Loginhandler(c echo.Context) error{
 	// if the user with supplied mail exist
 	// compare the passwords
 	// return response with user token
+	return nil
 }
