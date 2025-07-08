@@ -16,9 +16,10 @@ import (
 
 // creating a reusable struct
 type Application struct {
-	logger  echo.Logger
-	server  *echo.Echo
-	handler handler.Handler
+	logger        echo.Logger
+	server        *echo.Echo
+	handler       handler.Handler
+	appMiddleware middlewares.AppMiddleware
 }
 
 func main() {
@@ -45,10 +46,12 @@ func main() {
 	appMailer := mailer.NewMailer()
 
 	h := handler.Handler{DB: db, Mailer: appMailer}
+	appMiddleware := middlewares.AppMiddleware{DB: db}
 	app := Application{
-		logger:  e.Logger,
-		server:  e,
-		handler: h,
+		logger:        e.Logger,
+		server:        e,
+		handler:       h,
+		appMiddleware: appMiddleware,
 	}
 	fmt.Println(app)
 	e.Use(middleware.Logger())

@@ -13,6 +13,7 @@ import (
 	"github.com/Wanjie-Ryan/Go-Budget/cmd/api/services"
 	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/Wanjie-Ryan/Go-Budget/internal/mailer"
+	"github.com/Wanjie-Ryan/Go-Budget/internal/models"
 	"gorm.io/gorm"
 
 	// "github.com/go-playground/validator/v10"
@@ -162,7 +163,14 @@ func (h *Handler) Loginhandler(c echo.Context) error {
 	return common.SendSuccessResponse(c, "Login Successful", map[string]interface{}{"access_token": accessToken, "refresh_token": refreshToken, "user": user})
 }
 
-func (h *Handler) GetAuthUserHandler(c echo.Context) error{
+// Get the current Logged in user
+func (h *Handler) GetAuthUserHandler(c echo.Context) error {
+	//get the set user and assert that this user is of type model
+	user, ok := c.Get("user").(models.UserModel)
+	if !ok {
+		// return common.SendUnauthorizedResponse(c, "Invalid user")
+		return common.SendServerErrorResponse(c, "User authentication Failed")
+	}
 
-	return common.SendSuccessResponse(c, "Success", nil)
+	return common.SendSuccessResponse(c, "Authenticated user retrieved", user)
 }
