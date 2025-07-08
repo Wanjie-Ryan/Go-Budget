@@ -140,3 +140,8 @@ use Mail Trap
 # Installing JWT in Go
 
 go get -u github.com/golang-jwt/jwt/v5
+
+Putting a pointer to an argument in a function like, also means that the string can be nil
+func GetMe (message \*string){
+
+}
