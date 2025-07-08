@@ -47,6 +47,10 @@ func SendErrorResponse(c echo.Context, message string, statusCode int) error {
 
 }
 
+func SendUnauthorizedResponse(c echo.Context, message string) error {
+	return SendErrorResponse(c, message, http.StatusUnauthorized)
+}
+
 func SendBadRequestResponse(c echo.Context, message string) error {
 	// return c.JSON(http.StatusBadRequest, JSONErrorResponse{Success: false, Message: message})
 	return SendErrorResponse(c, message, http.StatusBadRequest)

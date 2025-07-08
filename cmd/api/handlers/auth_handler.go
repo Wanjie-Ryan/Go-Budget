@@ -161,3 +161,8 @@ func (h *Handler) Loginhandler(c echo.Context) error {
 	// key is of type string, while values are of type inteerface which can be anything
 	return common.SendSuccessResponse(c, "Login Successful", map[string]interface{}{"access_token": accessToken, "refresh_token": refreshToken, "user": user})
 }
+
+func (h *Handler) GetAuthUserHandler(c echo.Context) error{
+
+	return common.SendSuccessResponse(c, "Success", nil)
+}
