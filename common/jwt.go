@@ -55,7 +55,12 @@ func GenerateJWT(user models.UserModel) (*string, *string, error) {
 }
 
 // to ensure the JWT is correct
+// checks and extracts information from a JWT token that was sent by a client.
+// 1. Verifies if the token is valid, not expired or tampered with.
+// 2. extract info from token like userID
 func ParseJWT(signedAccessToken string) (*CustomJWTClaims, error) {
+	// go expects the custom claims structure - with fields like ID
+	// the func (t *jwt.Token) provides the secret key to verify the signature, and returns JWT_SECRET
 	parsedJwtAccessToken, err := jwt.ParseWithClaims(signedAccessToken, &CustomJWTClaims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})

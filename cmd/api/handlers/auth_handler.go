@@ -157,5 +157,7 @@ func (h *Handler) Loginhandler(c echo.Context) error {
 
 	// return response with user token
 	// return common.SendSuccessResponse(c, "Login Successful", user)
+	// the reason for using map in Go here below is because I return multiple data items in one JSON object
+	// key is of type string, while values are of type inteerface which can be anything
 	return common.SendSuccessResponse(c, "Login Successful", map[string]interface{}{"access_token": accessToken, "refresh_token": refreshToken, "user": user})
 }
