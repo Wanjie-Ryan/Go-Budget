@@ -64,3 +64,22 @@ func (u Userservice) GetUserByEmail(email string) (*models.UserModel, error) {
 	}
 	return &user, nil
 }
+
+func (u Userservice) ChangePassword(password string, user models.UserModel) error {
+
+	hashedPassword, err := common.HashPassword(password)
+
+	if err != nil {
+		return errors.New("failed to hash password")
+	}
+
+	// if password is hashed, then update the db with the new password
+	result := u.db.Model(user).Update("password", hashedPassword)
+
+	if result.Error != nil {
+		fmt.Println("change password error", result.Error)
+		return result.Error
+	}
+	return nil
+
+}

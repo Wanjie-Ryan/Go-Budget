@@ -197,5 +197,20 @@ func (h *Handler) UpdateUserPassword(c echo.Context) error {
 	}
 
 	fmt.Println("change password payload", changePasswordPayload, user)
-	return nil
+
+	// if the supplied current password does not match, the existing password for the user, return an error
+
+	if common.CheckPasswordHash(changePasswordPayload.CurrentPassword, user.Password) == false {
+
+		return common.SendBadRequestResponse(c, "The current password does not match the existing password")
+	}
+
+	userService := services.NewUserservice(h.DB)
+	err := userService.ChangePassword(changePasswordPayload.NewPassword, user)
+
+	if err != nil {
+		return common.SendBadRequestResponse(c, err.Error())
+	}
+
+	return common.SendSuccessResponse(c, "Password changed successfully", nil)
 }

@@ -66,7 +66,7 @@ func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*co
 			case "min":
 				errMessage = key + " must be at least " + param + " characters long"
 
-			case "eqfield": 
+			case "eqfield":
 				errMessage = key + " should be equal to new Password"
 			}
 
