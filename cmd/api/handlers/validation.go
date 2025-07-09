@@ -65,6 +65,9 @@ func (h *Handler) ValidateBodyRequest(c echo.Context, payload interface{}) []*co
 				errMessage = key + " must be a valid email address"
 			case "min":
 				errMessage = key + " must be at least " + param + " characters long"
+
+			case "eqfield": 
+				errMessage = key + " should be equal to new Password"
 			}
 
 			// fmt.Println(validationErr.Tag()) // what failed
