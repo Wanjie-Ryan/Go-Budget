@@ -14,3 +14,10 @@ type LoginUserRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=4"`
 }
+
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"currentPassword" validate:"required,min=4"`
+	NewPassword     string `json:"newPassword" validate:"required,min=4"`
+	ConfirmPassword string `json:"confirmPassword" validate:"eqfield=NewPassword"`
+	// the confirm password field should be equal to the new password
+}

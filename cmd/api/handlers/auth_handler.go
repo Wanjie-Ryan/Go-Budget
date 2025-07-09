@@ -174,3 +174,28 @@ func (h *Handler) GetAuthUserHandler(c echo.Context) error {
 
 	return common.SendSuccessResponse(c, "Authenticated user retrieved", user)
 }
+
+// when user is authenticated
+func (h *Handler) UpdateUserPassword(c echo.Context) error {
+	// get the user who is authenticated ATM
+	user, ok := c.Get("user").(models.UserModel)
+	if !ok {
+		return common.SendServerErrorResponse(c, "User authentication Failed")
+
+	}
+	// create a request/dto that will be exposed to the user to update
+	changePasswordPayload := new(request.ChangePasswordRequest)
+	if err := (&echo.DefaultBinder{}).BindBody(c, changePasswordPayload); err != nil {
+		fmt.Println("change password error", err)
+		return common.SendBadRequestResponse(c, "Invalid Request Body")
+
+	}
+
+	validationErrors := h.ValidateBodyRequest(c, *changePasswordPayload)
+	if validationErrors != nil {
+		return common.SendFailedvalidationResponse(c, validationErrors)
+	}
+
+	fmt.Println("change password payload", changePasswordPayload, user)
+	return nil
+}
