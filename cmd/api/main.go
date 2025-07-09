@@ -1,30 +1,33 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 
-	"github.com/Wanjie-Ryan/Go-Budget/cmd/api/handlers"
 	middlewares "github.com/Wanjie-Ryan/Go-Budget/cmd/api/middleware"
+	"github.com/Wanjie-Ryan/Go-Budget/cmd/routes"
 	"github.com/Wanjie-Ryan/Go-Budget/common"
-	"github.com/Wanjie-Ryan/Go-Budget/internal/mailer"
+
+	// "github.com/Wanjie-Ryan/Go-Budget/internal/mailer"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// creating a reusable struct
-type Application struct {
-	logger        echo.Logger
-	server        *echo.Echo
-	handler       handler.Handler
-	appMiddleware middlewares.AppMiddleware
-}
+// // creating a reusable struct
+// type Application struct {
+// 	logger        echo.Logger
+// 	server        *echo.Echo
+// 	handler       handler.Handler
+// 	appMiddleware middlewares.AppMiddleware
+// }
 
 func main() {
 
 	e := echo.New()
+	c := context.Background()
 	// loading or rather initializing the go-dotenv package
 	err := godotenv.Load()
 	if err != nil {
@@ -43,20 +46,21 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
-	appMailer := mailer.NewMailer()
+	// appMailer := mailer.NewMailer()
 
-	h := handler.Handler{DB: db, Mailer: appMailer}
-	appMiddleware := middlewares.AppMiddleware{DB: db}
-	app := Application{
-		logger:        e.Logger,
-		server:        e,
-		handler:       h,
-		appMiddleware: appMiddleware,
-	}
-	fmt.Println(app)
+	// h := handler.Handler{DB: db, Mailer: appMailer}
+	// appMiddleware := middlewares.AppMiddleware{DB: db}
+	// app := Application{
+	// 	logger:        e.Logger,
+	// 	server:        e,
+	// 	handler:       h,
+	// 	appMiddleware: appMiddleware,
+	// }
+	// fmt.Println(app)
 	e.Use(middleware.Logger())
 	e.Use(middlewares.CustomMiddleware)
-	app.routes(h)
+	var a routes.Application
+	a.Initial(db, c)
 	port := os.Getenv("APP_PORT")
 	appAddress := fmt.Sprintf("localhost:%s", port)
 	// the code below is wrapped in e.logger.Fatal() in a case where it returns an error, echo will log the error message, and exit your program with a non zero status code
