@@ -74,6 +74,8 @@ go get github.com/labstack/echo/v4/middleware
 
 Code that brings your DB schema into sync with your models; creating tables, adding columns, indexes, etc etc
 
+**go run {{path to your migration file}}**
+
 # Validator
 
 go get github.com/go-playground/validator/v10

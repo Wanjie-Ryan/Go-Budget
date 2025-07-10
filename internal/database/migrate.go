@@ -14,7 +14,7 @@ func main() {
 		// panic stops normal execution and unwinds the stack, prints the error and stack trace to the console
 		panic(err)
 	}
-	err = db.AutoMigrate(&models.UserModel{})
+	err = db.AutoMigrate(&models.UserModel{}, &models.AppTokenModel{})
 	// err = db.Migrator().AlterColumn(&models.UserModel{}, "Firstname")
 	// err = db.Migrator().AlterColumn(&models.UserModel{}, "Lastname")
 	// err = db.Migrator().AlterColumn(&models.UserModel{}, "Email")

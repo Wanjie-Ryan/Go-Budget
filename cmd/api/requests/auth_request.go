@@ -21,3 +21,8 @@ type ChangePasswordRequest struct {
 	ConfirmPassword string `json:"confirmPassword" validate:"eqfield=NewPassword"`
 	// the confirm password field should be equal to the new password
 }
+
+type ForgotPasswordRequest struct {
+	Email       string `json:"email" validate:"required,email"`
+	FrontendUrl string `json:"frontendurl" validate:"required,url"`
+}
