@@ -87,3 +87,7 @@ func (ats *AppTokenService) ValidateToken(user models.UserModel, token string) (
 	return &retrievedToken, nil
 
 }
+
+func (ats *AppTokenService) InvalidateToken(){
+	
+}
