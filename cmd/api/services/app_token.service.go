@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"math/rand"
 	"strconv"
 	"time"
@@ -34,27 +35,55 @@ func (ats *AppTokenService) GenerateToken() int {
 	return rand.Intn(99999-10000+1) + 10000
 }
 
-func (ats *AppTokenService) GenerateresetPasswordToken(user models.UserModel)(*models.AppTokenModel, error){
+func (ats *AppTokenService) GenerateresetPasswordToken(user models.UserModel) (*models.AppTokenModel, error) {
 	// for the token we will pass whatever token was generated in the function below
 	tokenCreated := models.AppTokenModel{
-		TargetId: user.ID,
-		Type:     "reset-password",
-		Token: strconv.Itoa(ats.GenerateToken()), // the method strconv helps us convert an integer to a string
-		Used:     false,
+		TargetId:  user.ID,
+		Type:      "reset-password",
+		Token:     strconv.Itoa(ats.GenerateToken()), // the method strconv helps us convert an integer to a string
+		Used:      false,
 		ExpiresAt: time.Now().Add(time.Hour * 1), // the token will expire after 24 hours
 
 	}
 	// ats.db.Create returns only one value which is the gorm.db, and in it it has the error, result, everything
 
-	result:= ats.db.Create(&tokenCreated)
-	if result.Error !=nil{
+	result := ats.db.Create(&tokenCreated)
+	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	return &tokenCreated, nil
-	
+
 }
 
 // validating the token that has been created
 
+func (ats *AppTokenService) ValidateToken(user models.UserModel, token string) (*models.AppTokenModel, error) {
 
+	var retrievedToken models.AppTokenModel
+	// we will search the db for where the token is equal to the passed params, and return the first value that is retrieved, and store the value in the retrievedToken variable
+	// the result variable holds a *gorm.Db object, the variable holds metadata about the query execution::: result.Error, result.RowsAffected, result.statement
+	// the result variable DOES NOT directly hold the data.
+	result := ats.db.Where(&models.AppTokenModel{TargetId: user.ID, Type: "reset-password", Token: token}).First(&retrievedToken)
+
+	// the outer if is  a general statement to catch any error, the inner if statement is to catch the specific gorm.recordnotfound error
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.New("Invalid password reset token")
+		}
+		return nil, result.Error
+
+	}
+
+	// if used is true, return an error
+	if retrievedToken.Used {
+		return nil, errors.New("Invalid password reset token")
+	}
+
+	if retrievedToken.ExpiresAt.Before(time.Now()) {
+		return nil, errors.New("Password reset token has expired")
+	}
+
+	return &retrievedToken, nil
+
+}
