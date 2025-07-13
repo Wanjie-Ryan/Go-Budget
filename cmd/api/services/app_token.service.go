@@ -88,6 +88,10 @@ func (ats *AppTokenService) ValidateToken(user models.UserModel, token string) (
 
 }
 
-func (ats *AppTokenService) InvalidateToken(){
-	
+// the db.Model explicitly sets the table/model you want to work on
+// tells gorm sth like All ops from this point in the chain should use this models table and schema
+// the statement tells gorm, target the AppTokenModel table, Apply this where condition, and run an update SQL query directly on that table.
+func (ats *AppTokenService) InvalidateToken(user_id int, appToken models.AppTokenModel) {
+	ats.db.Model(&models.AppTokenModel{}).Where("target_id=? AND token=?", user_id, appToken.Token).Update("used", true)
+
 }
