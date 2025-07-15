@@ -12,8 +12,10 @@ func (app *Application) routes(handler handler.Handler) {
 	apiGroup := app.server.Group("/api")
 	publicAuthRoutes := apiGroup.Group("/auth")
 	// {
-		publicAuthRoutes.POST("/register", handler.Registerhandler)
-		publicAuthRoutes.POST("/login", handler.Loginhandler)
+	publicAuthRoutes.POST("/register", handler.Registerhandler)
+	publicAuthRoutes.POST("/login", handler.Loginhandler)
+	publicAuthRoutes.POST("/reset-token", handler.ForgotPassword)
+	publicAuthRoutes.POST("/reset-password", handler.ResetPasswordHandler)
 	// }
 
 	profileAuthRoutes := apiGroup.Group("/profile", app.appMiddleware.AuthMiddleware)

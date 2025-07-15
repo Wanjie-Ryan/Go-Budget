@@ -26,3 +26,10 @@ type ForgotPasswordRequest struct {
 	Email       string `json:"email" validate:"required,email"`
 	FrontendUrl string `json:"frontendurl" validate:"required,url"`
 }
+
+type ResetPasswordRequest struct {
+	Password        string `json:"password" validate:"required,min=4"`
+	ConfirmPassword string `json:"confirm_password" validate:"eqfield=Password"`
+	Token           string `json:"token" validate:"required,min=5"`
+	Meta            string `json:"meta" validate:"required"`
+}
