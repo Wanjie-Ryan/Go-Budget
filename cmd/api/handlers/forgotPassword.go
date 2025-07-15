@@ -116,7 +116,7 @@ func (h *Handler) ResetPasswordHandler(c echo.Context) error {
 		return common.SendServerErrorResponse(c, "An Error occurred, please try again later")
 	}
 	// email being returned is going to be of data type byte, not string
-	fmt.Println("decoded email", email)
+	fmt.Println("decoded email", string(email))
 
 	userService := services.NewUserservice(h.DB)
 	// convert the email to string coz, its being returned as byte data type after being decoded
