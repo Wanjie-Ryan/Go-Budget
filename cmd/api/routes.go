@@ -9,6 +9,7 @@ import (
 // also we'll add a prefix to the routes
 func (app *Application) routes(handler handler.Handler) {
 
+	// routes for authentication
 	apiGroup := app.server.Group("/api")
 	publicAuthRoutes := apiGroup.Group("/auth")
 	// {
@@ -18,12 +19,17 @@ func (app *Application) routes(handler handler.Handler) {
 	publicAuthRoutes.POST("/reset-password", handler.ResetPasswordHandler)
 	// }
 
+	//routes for profile
 	profileAuthRoutes := apiGroup.Group("/profile", app.appMiddleware.AuthMiddleware)
 	{
 		profileAuthRoutes.GET("/authenticated/user", handler.GetAuthUserHandler)
 		profileAuthRoutes.PATCH("/update/password", handler.UpdateUserPassword)
 
 	}
+
+	//routes for authentication
+	categoryAuthRoutes := apiGroup.Group("/category", app.appMiddleware.AuthMiddleware)
+	categoryAuthRoutes.GET("/all", handler.GetAllCategories)
 
 	app.server.GET("/health", handler.HealthCheck)
 	// ORIGINAL
