@@ -147,3 +147,10 @@ Putting a pointer to an argument in a function like, also means that the string 
 func GetMe (message \*string){
 
 }
+
+FieldName string `json:"-"
+the meaning of the hyphen, usually used when creating models or DTOs in GO
+The field is **completely** ignored by JSON.
+
+1. when marshaling (encoding) --> the field will **not appear** in the JSON output (response to client).
+2. when unmarshalling (decoding) --> this field will **not** be read from JSON input (request body).

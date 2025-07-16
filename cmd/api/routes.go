@@ -30,6 +30,7 @@ func (app *Application) routes(handler handler.Handler) {
 	//routes for authentication
 	categoryAuthRoutes := apiGroup.Group("/category", app.appMiddleware.AuthMiddleware)
 	categoryAuthRoutes.GET("/all", handler.GetAllCategories)
+	categoryAuthRoutes.POST("/create", handler.Createcategory)
 
 	app.server.GET("/health", handler.HealthCheck)
 	// ORIGINAL
