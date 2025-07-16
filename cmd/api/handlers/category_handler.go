@@ -52,7 +52,7 @@ func (h *Handler) Createcategory(c echo.Context) error {
 	result, err := categoryService.Createcategory(categoryPayload)
 	if err != nil {
 		return common.SendServerErrorResponse(c, err.Error())
-	}
+	} 
 
 	return common.SendSuccessResponse(c, "Category Created", result)
 }

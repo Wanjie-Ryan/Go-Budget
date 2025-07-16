@@ -46,8 +46,8 @@ func (cs *CategoryService) Createcategory(categoryPayload *request.Categoryreque
 	slug = strings.Replace(slug, " ", "_", -1)
 
 	categoryModelCreated := models.CategoryModel{
-		Name: categoryPayload.Name,
-		Slug: slug,
+		Name:     categoryPayload.Name,
+		Slug:     slug,
 		IsCustom: categoryPayload.IsCustom,
 	}
 
@@ -55,15 +55,19 @@ func (cs *CategoryService) Createcategory(categoryPayload *request.Categoryreque
 
 	// because the slug and the name of the categories are supposed to be unique, then we should first check if they exist in the DB, if they DO NOT exist, create them, if they exist, it loads into object, therefore we will not use the .create method directly, we will find the slug in the DB that matches the slug that was created
 	//.firstorcreate, either gets the first slug that matches the passed slug or creates it
+	// the query below will be checking where the slug and the name are equal to the slug and the name that was created
 
-	result := cs.db.Where(models.CategoryModel{Slug: slug}).FirstOrCreate(&categoryModelCreated)
+	result := cs.db.Where(models.CategoryModel{Slug: slug, Name: categoryModelCreated.Name}).FirstOrCreate(&categoryModelCreated)
 
 	if result.Error != nil {
 		fmt.Println(result.Error.Error())
+		// the duplicate error key lets you get the specific error message in case there is a duplication
+		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+			return nil, errors.New("category already exists")
+		}
 		// return nil, errors.New(result.Error.Error())
 		return nil, errors.New("failed to create category")
 	}
 	return &categoryModelCreated, nil
 
- }
-  
+}

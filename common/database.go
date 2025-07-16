@@ -25,7 +25,8 @@ func NewMySql() (*gorm.DB, error) {
 	// fmt.Println(dsn)
 	//tries to connect to the database
 	// gorm.Open returns (*gorm.DB, error)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	// gorm.Config{TranslateError: true} lets gorm return specific errors to the DB dialect being used
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{TranslateError: true})
 	if err != nil {
 		return nil, err
 	}
