@@ -125,3 +125,48 @@ func (h *Handler) GetSingleCategory(c echo.Context) error {
 
 	return common.SendSuccessResponse(c, "Category Found", category)
 }
+
+// function to update a category
+
+func (h *Handler) UpdateCategory(c echo.Context) error {
+
+	_, ok := c.Get("user").(models.UserModel)
+
+	if !ok {
+		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
+	}
+
+	// getting the id from the params and binding it to the param request
+	categoryId := new(request.IDParamRequest)
+
+	if err := (&echo.DefaultBinder{}).BindPathParams(c, categoryId); err != nil {
+		return common.SendBadRequestResponse(c, "Invalid ID Parameter")
+	}
+
+	// getting the category payload to update from the body, and bind to the bind body
+
+	updatePayload := new(request.Categoryrequest)
+
+	if err := (&echo.DefaultBinder{}).BindBody(c, updatePayload); err != nil {
+		return common.SendBadRequestResponse(c, "Invalid Category Request Body")
+	}
+
+	validationErr := h.ValidateBodyRequest(c, updatePayload)
+	if validationErr != nil {
+		return common.SendFailedvalidationResponse(c, validationErr)
+	}
+
+	categoryService := services.NewCategoryService(h.DB)
+
+	updatedcategory, err := categoryService.UpdateCategory(updatePayload, categoryId.ID)
+
+	if err != nil {
+		if err.Error() == "category not found" {
+			return common.SendNotFoundResponse(c, "Category Not Found")
+		}
+		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	return common.SendSuccessResponse(c, "Category Updated", updatedcategory)
+
+}

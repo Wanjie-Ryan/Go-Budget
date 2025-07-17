@@ -115,3 +115,61 @@ func (cs *CategoryService) GetSingleCategory(d uint) (*models.CategoryModel, err
 
 	return &category, nil
 }
+
+// function to update a category
+// func (cs *CategoryService) UpdateCategory(categoryPayload *request.Categoryrequest, id uint)(*models.CategoryModel, error){
+
+// 	_, err :=cs.GetSingleCategory(id)
+
+// 	if err != nil{
+// 		return nil, err
+// 	}
+
+// 	slug := strings.ToLower(categoryPayload.Name)
+// 	slug = strings.Replace(slug, " ", "_", -1)
+
+// 	// retrievedCategory.Name = categoryPayload.Name
+// 	// retrievedCategory.Slug = slug
+// 	// retrievedCategory.IsCustom = categoryPayload.IsCustom
+
+// 	// result := cs.db.Save(retrievedCategory)
+
+// 	modelToUpdate := models.CategoryModel{
+// 		Name:     categoryPayload.Name,
+// 		Slug:     slug,
+// 		IsCustom: categoryPayload.IsCustom,
+// 	}
+
+// 	result := cs.db.Model(&models.CategoryModel{}).Where("id = ?", id).Updates(modelToUpdate)
+
+// 	if result.Error != nil {
+// 		fmt.Println(result.Error.Error())
+// 		return nil, result.Error
+// 	}
+// 	return &modelToUpdate, nil
+// }
+
+// New function to update category
+
+func (cs *CategoryService) UpdateCategory(categoryPayload *request.Categoryrequest, id uint) (*models.CategoryModel, error) {
+	// Fetch the existing category by ID
+	var category models.CategoryModel
+	result := cs.db.First(&category, id)
+	if result.Error != nil {
+		return nil, result.Error // Return the error if not found
+	}
+
+	// Now update the fields from the payload
+	category.Name = categoryPayload.Name
+	category.Slug = strings.ToLower(categoryPayload.Name)
+	category.Slug = strings.Replace(category.Slug, " ", "_", -1)
+	category.IsCustom = categoryPayload.IsCustom // Update the 'IsCustom' field
+
+	// Save the updated category back to the database
+	updateResult := cs.db.Save(&category)
+	if updateResult.Error != nil {
+		return nil, updateResult.Error // Return error if save fails
+	}
+
+	return &category, nil
+}

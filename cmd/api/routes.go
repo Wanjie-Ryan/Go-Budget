@@ -36,6 +36,8 @@ func (app *Application) routes(handler handler.Handler) {
 
 	categoryAuthRoutes.GET("/single/:id", handler.GetSingleCategory)
 
+	categoryAuthRoutes.PATCH("/update/:id", handler.UpdateCategory)
+
 	app.server.GET("/health", handler.HealthCheck)
 	// ORIGINAL
 	// app.server.POST("/register", handler.Registerhandler)
