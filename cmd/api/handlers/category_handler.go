@@ -56,3 +56,44 @@ func (h *Handler) Createcategory(c echo.Context) error {
 
 	return common.SendSuccessResponse(c, "Category Created", result)
 }
+
+// we need the id of the specific category, and for this, we create the param_request
+func (h *Handler) DeleteCategory(c echo.Context) error{
+	_, ok:=c.Get("user").(models.UserModel)
+	if !ok{
+		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
+	}
+
+	// path like /category/:id
+	// binding the incoming id param request to the handler
+	// var categoryId request.IDParamRequest
+	categoryId := new(request.IDParamRequest)
+	paramErr := (&echo.DefaultBinder{}).BindPathParams(c, categoryId)
+
+	if paramErr !=nil{
+		fmt.Println("parameter error",paramErr)
+		return common.SendBadRequestResponse(c, "Invalid ID Parameter")
+	}
+	fmt.Println("category id", categoryId)
+
+	// categoryPayload := new(request.Categoryrequest)
+	// if err := (&echo.DefaultBinder{}).BindBody(c, categoryPayload); err !=nil{
+	// 	return common.SendBadRequestResponse(c, "Invalid Category Request Body")
+	// }
+
+	// validationErr := h.ValidateBodyRequest(c, categoryPayload)
+	// if validationErr != nil {
+	// 	return common.SendFailedvalidationResponse(c, validationErr)
+	// }
+
+	categoryService :=services.NewCategoryService(h.DB)
+
+	error := categoryService.DeleteCategory(categoryId.ID)
+	if error != nil {
+		if error.Error() == "category not found"{
+			return common.SendNotFoundResponse(c, "Category Not Found")
+		}
+		return common.SendServerErrorResponse(c, error.Error())
+	}
+	return common.SendSuccessResponse(c, "Category Deleted", nil)
+}

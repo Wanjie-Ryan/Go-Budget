@@ -71,3 +71,31 @@ func (cs *CategoryService) Createcategory(categoryPayload *request.Categoryreque
 	return &categoryModelCreated, nil
 
 }
+
+// function to delete a category
+func (cs *CategoryService) DeleteCategory(id uint) error {
+
+	// result := cs.db.Where(models.CategoryModel{Name:category.Name}).Delete(&models.CategoryModel{})
+	// if result.Error !=nil{
+	// 	return result.Error
+	// }
+
+	// DELETING FROM ID
+
+	var category models.CategoryModel
+
+	singleCategoryResult := cs.db.First(&category, id)
+
+	if singleCategoryResult.Error != nil {
+		if errors.Is(singleCategoryResult.Error, gorm.ErrRecordNotFound) {
+			return errors.New("category not found")
+		}
+		return singleCategoryResult.Error
+	}
+
+	// without the unscoped, it will only do a soft delete, but with the unscoped, it will permanently delete from the DB
+	result := cs.db.Unscoped().Delete(&category)
+	fmt.Println("result after deleting", *result)
+	return result.Error
+
+}

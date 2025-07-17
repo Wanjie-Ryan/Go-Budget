@@ -31,6 +31,8 @@ func (app *Application) routes(handler handler.Handler) {
 	categoryAuthRoutes := apiGroup.Group("/category", app.appMiddleware.AuthMiddleware)
 	categoryAuthRoutes.GET("/all", handler.GetAllCategories)
 	categoryAuthRoutes.POST("/create", handler.Createcategory)
+	// we will be extracting the id from the url using the param struct and and binding it to the Deletecategory handler
+	categoryAuthRoutes.DELETE("/delete/:id", handler.DeleteCategory)
 
 	app.server.GET("/health", handler.HealthCheck)
 	// ORIGINAL
