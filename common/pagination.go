@@ -1,0 +1,62 @@
+package common
+
+// define a struct that will hold the data that the FE needs to pass when requesting for data
+
+type pagination struct {
+	Limit     int    `query:"limit"` // how much data does the user retrieve per request? 10, 20, 30 etc etc
+	Page      int    `query:"page"`  // defines the page the user wants to get
+	Sort      string `query:"sort"`
+	TotalRows int    `json:"total_rows"`
+	TotalPage int    `json:"total_page"`
+}
+
+// SCENARIO
+// we have 100 categories
+// want to retrieve a limit of 10 --> limit of 10
+// for the first page, page 1 --> page of 1
+// total rows are 100
+// Total page = Total rows / limit
+
+// define functions to set the pagination params
+// this function will return to us the page that the user actually passed
+func (p *pagination) GetPage() int {
+
+	if p.Page <= 0 {
+		p.Page = 1
+	}
+
+	return p.Page
+}
+
+// function to get the maximum number of items user can get per page
+func (p *pagination) GetLimit() int {
+	if p.Limit > 100 {
+		p.Limit = 100
+	} else if p.Limit <= 0 {
+		p.Limit = 10
+	}
+	return p.Limit
+}
+
+// offset method
+func (p *pagination) GetOffset() int {
+	return (p.GetPage() - 1) * p.GetLimit()
+}
+
+// method to instantiate the struct
+
+// offset --> determines the starting point of the records to be retreived from a data source. it helps fetch specific set or records based on page number and number of records per page (limit).
+// offset refers to how many records to skip before starting to return results
+// if you want to retrieve results for a particular page say page 3, the offset tells the system where to begin retrieving the records from, based on the page number and limit
+// lets say you have 10 items (rows) you want to show 10 items per page.
+// page 1 will retrieve items 1-10 --> strating from offset = 0
+// page 2 will retrieve items 11-20 --> starting from offset = 10
+// page 3 will retrieve items 21-30 --> starting from offset = 20
+
+// limit = 10 items per page
+// page = 1,2,3 (requested page)
+// offset formula = (page-1) * limit
+
+// offset for page 1: (1-1) * 10 = 0
+// offset for page 2: (2-1) * 10 = 10
+// offset for page 3: (3-1) * 10 = 20
