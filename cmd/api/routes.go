@@ -34,6 +34,8 @@ func (app *Application) routes(handler handler.Handler) {
 	// we will be extracting the id from the url using the param struct and and binding it to the Deletecategory handler
 	categoryAuthRoutes.DELETE("/delete/:id", handler.DeleteCategory)
 
+	categoryAuthRoutes.GET("/single/:id", handler.GetSingleCategory)
+
 	app.server.GET("/health", handler.HealthCheck)
 	// ORIGINAL
 	// app.server.POST("/register", handler.Registerhandler)

@@ -11,8 +11,8 @@ import (
 )
 
 func (h *Handler) GetAllCategories(c echo.Context) error {
-	_, ok:=c.Get("user").(models.UserModel)
-	if !ok{
+	_, ok := c.Get("user").(models.UserModel)
+	if !ok {
 		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
 	}
 
@@ -30,8 +30,8 @@ func (h *Handler) Createcategory(c echo.Context) error {
 
 	// the code below helps to get the current authenticated user via the context
 	// if the user context is not being utilized put an underscore
-	_, ok :=c.Get("user").(models.UserModel)
-	if !ok{
+	_, ok := c.Get("user").(models.UserModel)
+	if !ok {
 		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
 	}
 
@@ -52,15 +52,15 @@ func (h *Handler) Createcategory(c echo.Context) error {
 	result, err := categoryService.Createcategory(categoryPayload)
 	if err != nil {
 		return common.SendServerErrorResponse(c, err.Error())
-	} 
+	}
 
 	return common.SendSuccessResponse(c, "Category Created", result)
 }
 
 // we need the id of the specific category, and for this, we create the param_request
-func (h *Handler) DeleteCategory(c echo.Context) error{
-	_, ok:=c.Get("user").(models.UserModel)
-	if !ok{
+func (h *Handler) DeleteCategory(c echo.Context) error {
+	_, ok := c.Get("user").(models.UserModel)
+	if !ok {
 		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
 	}
 
@@ -70,8 +70,8 @@ func (h *Handler) DeleteCategory(c echo.Context) error{
 	categoryId := new(request.IDParamRequest)
 	paramErr := (&echo.DefaultBinder{}).BindPathParams(c, categoryId)
 
-	if paramErr !=nil{
-		fmt.Println("parameter error",paramErr)
+	if paramErr != nil {
+		fmt.Println("parameter error", paramErr)
 		return common.SendBadRequestResponse(c, "Invalid ID Parameter")
 	}
 	fmt.Println("category id", categoryId)
@@ -86,14 +86,42 @@ func (h *Handler) DeleteCategory(c echo.Context) error{
 	// 	return common.SendFailedvalidationResponse(c, validationErr)
 	// }
 
-	categoryService :=services.NewCategoryService(h.DB)
+	categoryService := services.NewCategoryService(h.DB)
 
 	error := categoryService.DeleteCategory(categoryId.ID)
 	if error != nil {
-		if error.Error() == "category not found"{
+		if error.Error() == "category not found" {
 			return common.SendNotFoundResponse(c, "Category Not Found")
 		}
 		return common.SendServerErrorResponse(c, error.Error())
 	}
 	return common.SendSuccessResponse(c, "Category Deleted", nil)
+}
+
+//GET a single category handler
+
+func (h *Handler) GetSingleCategory(c echo.Context) error {
+	_, ok := c.Get("user").(models.UserModel)
+	if !ok {
+		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
+	}
+
+	categoryId := new(request.IDParamRequest)
+
+	if err := (&echo.DefaultBinder{}).BindPathParams(c, categoryId); err != nil {
+		return common.SendBadRequestResponse(c, "Invalid ID Parameter")
+	}
+
+	categoryService := services.NewCategoryService(h.DB)
+
+	category, err := categoryService.GetSingleCategory(categoryId.ID)
+
+	if err != nil {
+		if err.Error() == "category not found" {
+			return common.SendNotFoundResponse(c, "Category Not Found")
+		}
+		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	return common.SendSuccessResponse(c, "Category Found", category)
 }

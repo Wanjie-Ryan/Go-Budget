@@ -99,3 +99,19 @@ func (cs *CategoryService) DeleteCategory(id uint) error {
 	return result.Error
 
 }
+
+// function to get a single category
+func (cs *CategoryService) GetSingleCategory(d uint) (*models.CategoryModel, error) {
+	var category models.CategoryModel
+
+	result := cs.db.First(&category, d)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.New("category not found")
+		}
+		return nil, result.Error
+	}
+
+	return &category, nil
+}
