@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Wanjie-Ryan/Go-Budget/internal/models"
+	// "github.com/Wanjie-Ryan/Go-Budget/internal/models"
 	"gorm.io/gorm"
 )
 
 // define a struct that will hold the data that the FE needs to pass when requesting for data
 
 type Pagination struct {
-	Limit     int    `query:"limit" json:"limit"` // how much data does the user retrieve per request? 10, 20, 30 etc etc
-	Page      int    `query:"page" json:"page"`  // defines the page the user wants to get
-	Sort      string `query:"sort"`
-	TotalRows int64    `json:"total_rows"`
-	TotalPage int    `json:"total_page"`
+	Limit     int    `query:"limit" json:"limit"` // how much data does the user retrieve per request? 10, 20, 30 etc etc. How many items per page
+	Page      int    `query:"page" json:"page"`   // defines the page the user wants to get. Which page the user wants.
+	Sort      string `query:"sort"`               //sorts results like ASC or DESC
+	TotalRows int64  `json:"total_rows"`          // how many records exist in the DB
+	TotalPage int    `json:"total_page"`          // total number of pages based on total records and limit
 }
 
 // SCENARIO
@@ -48,6 +48,9 @@ func (p *Pagination) GetLimit() int {
 }
 
 // offset method
+// calculates how many rows to skip in the DB to get to the desired page
+// for page 1, skip 0 rows (1-1) * 10 = 0
+// for page 2, skip 10 rows (2-1) * 10 = 10
 func (p *Pagination) GetOffset() int {
 	return (p.GetPage() - 1) * p.GetLimit()
 }
@@ -55,7 +58,8 @@ func (p *Pagination) GetOffset() int {
 // method to instantiate the pagination  struct
 // the function will accept the model that we want to paginate, which will be an interface, meaning it may hold any type of data, also pass in the request, and the DB
 // it will return a pagination struct
-func NewPagination(models interface{}, r *http.Request, db *gorm.DB) *Pagination{
+// initializes pagination object
+func NewPagination(models interface{}, r *http.Request, db *gorm.DB) *Pagination {
 
 	// declare a pah=gination variable that will hold the value
 	var pagination Pagination
@@ -65,7 +69,7 @@ func NewPagination(models interface{}, r *http.Request, db *gorm.DB) *Pagination
 	page, _ := strconv.Atoi(q.Get("page")) // the page number the FE wants to retrieve data from
 
 	// get the limit from the url query
-	limit, _ :=strconv.Atoi(q.Get("limit")) // how much data per page the FE wants to retrieve
+	limit, _ := strconv.Atoi(q.Get("limit")) // how much data per page the FE wants to retrieve
 
 	// define the total number of rows from the db using the count method
 	// variable to hold the total number of rows
@@ -78,15 +82,22 @@ func NewPagination(models interface{}, r *http.Request, db *gorm.DB) *Pagination
 
 	// after storing the variables, the next thing is to calculate the total pages
 
-	totalPage := int(math.Ceil(float64(totalRows)/float64(pagination.GetLimit())))
+	// use the math.Ceil to ensure we always round up
+	// if you have 91 rows and a limit of 10 -> 91/10 = 9.1 which ceiling is 10 pages
+	totalPage := int(math.Ceil(float64(totalRows) / float64(pagination.GetLimit())))
 
 	pagination.TotalPage = totalPage
 
 	return &pagination
 }
 
-
-
+// the function below returns a **closure** which is a function that returns another function
+// the returned function accepts a GORM object and applies both the offset and limit to it.
+func (p Pagination) Paginate() func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Offset(p.GetOffset()).Limit(p.GetLimit())
+	}
+}
 
 // offset --> determines the starting point of the records to be retreived from a data source. it helps fetch specific set or records based on page number and number of records per page (limit).
 // offset refers to how many records to skip before starting to return results
