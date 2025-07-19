@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	request "github.com/Wanjie-Ryan/Go-Budget/cmd/api/requests"
+	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/Wanjie-Ryan/Go-Budget/internal/models"
 	"gorm.io/gorm"
 )
@@ -20,19 +21,27 @@ func NewCategoryService(db *gorm.DB) *CategoryService {
 }
 
 // function to get all categories from the DB
-func (cs *CategoryService) GetAllCategories() ([]*models.CategoryModel, error) {
+func (cs *CategoryService) GetAllCategories(paginator *common.Pagination, categories []*models.CategoryModel) (common.Pagination, error) {
 
 	// create a variable to hold the retrieved categoryModel data
-	var categories []*models.CategoryModel
+	// var categories []*models.CategoryModel
 
-	result := cs.db.Find(&categories)
+	// result := cs.db.Find(&categories)
 
-	if result.Error != nil {
-		// return nil, errors.New("failed to fetch categories")
-		fmt.Println(result.Error.Error())
-		return nil, errors.New(result.Error.Error())
-	}
-	return categories, nil
+	// this is simply calling the method to fill the categories slice and move on
+	cs.db.Scopes(paginator.Paginate()).Find(&categories)
+
+	// if result.Error != nil {
+	// 	// return nil, errors.New("failed to fetch categories")
+	// 	fmt.Println(result.Error.Error())
+	// 	return nil, errors.New(result.Error.Error())
+	// }
+
+	// in this case the catgeories was declared and in the handler and passed down
+	paginator.Items = categories
+
+	// return categories, nil
+	return *paginator, nil
 
 }
 

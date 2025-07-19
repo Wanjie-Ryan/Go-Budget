@@ -11,14 +11,19 @@ import (
 )
 
 func (h *Handler) GetAllCategories(c echo.Context) error {
+
+	var categories []*models.CategoryModel
 	_, ok := c.Get("user").(models.UserModel)
 	if !ok {
 		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
 	}
 
+	paginator := common.NewPagination(categories, c.Request(), h.DB)
+
 	categoryService := services.NewCategoryService(h.DB)
 
-	allcategories, err := categoryService.GetAllCategories()
+	// pass the paginator instantiated to the service
+	allcategories, err := categoryService.GetAllCategories(paginator, categories)
 	if err != nil {
 		return common.SendServerErrorResponse(c, err.Error())
 	}

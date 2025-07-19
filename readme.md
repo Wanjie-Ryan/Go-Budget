@@ -154,3 +154,14 @@ The field is **completely** ignored by JSON.
 
 1. when marshaling (encoding) --> the field will **not appear** in the JSON output (response to client).
 2. when unmarshalling (decoding) --> this field will **not** be read from JSON input (request body).
+
+## Difference between the two variable declaration
+
+1. var categories []\*models.CategoryModel
+
+above is used as a pointer to a **LIST** of memory addresses.
+used when you expect multiple categories
+
+2. var categories \*models.CategoryModel
+   used when its a single pointer to one categorymodel struct
+   used when you expect one single category

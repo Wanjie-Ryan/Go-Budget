@@ -12,11 +12,12 @@ import (
 // define a struct that will hold the data that the FE needs to pass when requesting for data
 
 type Pagination struct {
-	Limit     int    `query:"limit" json:"limit"` // how much data does the user retrieve per request? 10, 20, 30 etc etc. How many items per page
-	Page      int    `query:"page" json:"page"`   // defines the page the user wants to get. Which page the user wants.
-	Sort      string `query:"sort"`               //sorts results like ASC or DESC
-	TotalRows int64  `json:"total_rows"`          // how many records exist in the DB
-	TotalPage int    `json:"total_page"`          // total number of pages based on total records and limit
+	Limit     int         `query:"limit" json:"limit"` // how much data does the user retrieve per request? 10, 20, 30 etc etc. How many items per page
+	Page      int         `query:"page" json:"page"`   // defines the page the user wants to get. Which page the user wants.
+	Sort      string      `query:"sort"`               //sorts results like ASC or DESC
+	TotalRows int64       `json:"total_rows"`          // how many records exist in the DB
+	TotalPage int         `json:"total_page"`          // total number of pages based on total records and limit
+	Items     interface{} `json:"items"`
 }
 
 // SCENARIO
@@ -93,7 +94,7 @@ func NewPagination(models interface{}, r *http.Request, db *gorm.DB) *Pagination
 
 // the function below returns a **closure** which is a function that returns another function
 // the returned function accepts a GORM object and applies both the offset and limit to it.
-func (p Pagination) Paginate() func(db *gorm.DB) *gorm.DB {
+func (p *Pagination) Paginate() func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Offset(p.GetOffset()).Limit(p.GetLimit())
 	}
