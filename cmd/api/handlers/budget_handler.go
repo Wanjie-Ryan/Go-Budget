@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"fmt"
+
 	request "github.com/Wanjie-Ryan/Go-Budget/cmd/api/requests"
+	"github.com/Wanjie-Ryan/Go-Budget/cmd/api/services"
 	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/Wanjie-Ryan/Go-Budget/internal/models"
 	"github.com/labstack/echo/v4"
@@ -9,7 +12,8 @@ import (
 
 func (h *Handler) CreateBudget(c echo.Context) error {
 
-	_, ok := c.Get("user").(models.UserModel)
+	// because we are storing the authenticated user in our context, then we have access to the user and all its properties
+	user, ok := c.Get("user").(models.UserModel)
 	if !ok {
 		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
 	}
@@ -25,5 +29,34 @@ func (h *Handler) CreateBudget(c echo.Context) error {
 		return common.SendFailedvalidationResponse(c, validationErr)
 	}
 
-	return nil
+	budgetService := services.NewBudgetService(h.DB)
+	categoryService := services.NewCategoryService(h.DB)
+
+	createdBudget, err := budgetService.CreateBudget(createBudgetPayload, user.ID)
+
+	if err != nil {
+		fmt.Println("error creating budget", err)
+		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	// associating the categories to the budget
+
+	// categories, err := categoryService.GetMultipleCategories(createBudgetPayload.Categories)
+	categories, err := categoryService.GetMultipleCategories(createBudgetPayload)
+
+	if err != nil {
+		fmt.Println("error getting categories", err)
+		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	err = budgetService.DB.Model(createdBudget).Association("Categories").Replace(categories)
+
+	if err != nil {
+		fmt.Println("error associating categories to budget", err)
+		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	createdBudget.Categories = categories
+
+	return common.SendSuccessResponse(c, "Budget Created", createdBudget)
 }

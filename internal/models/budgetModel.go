@@ -13,7 +13,7 @@ type BudgetModel struct {
 	Amount float64 `gorm:"type:decimal(10,2);not null" json:"amount"`
 	// will create a join table called budget_category
 	// You can still Preload("Categories") to get categories when querying budgets.
-	Categories []CategoryModel `gorm:"constraint:OnDelete:CASCADE;many2many:budget_category" json:"categories"`
+	Categories []*CategoryModel `gorm:"constraint:OnDelete:CASCADE;many2many:budget_category" json:"categories"`
 	Date       time.Time       `gorm:"type:datetime;not null" json:"date"`
 	Month      uint            `gorm:"type:TINYINT UNSIGNED;not null;index:idx_month_year;uniqueIndex:unique_user_id_slug_year_month" json:"month"`
 	Year       uint16          `gorm:"type:TINYINT UNSIGNED;not null;index:idx_month_year;uniqueIndex:unique_user_id_slug_year_month" json:"year"`

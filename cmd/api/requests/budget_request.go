@@ -9,8 +9,9 @@ type CreateBudgetRequest struct {
 	Amount     float64  `json:"amount" validate:"required, numeric, min=1"`
 	//omitempty --> its ok if the user doesn't provide this
 	// the format date is type YYYY-MM-DD
-	Date  string `json:"date,omitempty" validate:"omitempty, datetime=2006-01-02"`
-	Title string `json:"title" validate:"required, min=2, max=200"`
+	Date        string  `json:"date,omitempty" validate:"omitempty, datetime=2006-01-02"`
+	Title       string  `json:"title" validate:"required, min=2, max=200"`
+	Description *string `json:"description" validate:"omitempty, min=2, max=1000"`
 }
 
 type UpdateBudgetRequest struct {
