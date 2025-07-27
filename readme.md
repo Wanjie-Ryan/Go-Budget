@@ -214,3 +214,51 @@ the above means
 SQL Equivalent
 CREATE UNIQUE INDEX unique_user_id_slug_year_month
 ON budget(user_id, slug, year, month);
+
+## What is a Foreign Key
+
+This is a column in one table that refers to the primary key in another.
+**Links to models**
+
+## Example in code
+
+// user.go
+type User struct {
+ID uint `gorm:"primaryKey"`
+Name string
+Posts []Post `gorm:"foreignKey:UserID"` // One-to-many relationship, a user has many posts
+}
+
+// post.go
+type Post struct {
+ID uint `gorm:"primaryKey"`
+Title string
+Body string
+UserID uint // Foreign key
+User User // Belongs to User, lets GORM preload or join the associated User
+}
+
+in SQL
+CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+name VARCHAR(100)
+);
+
+CREATE TABLE posts (
+id SERIAL PRIMARY KEY,
+title VARCHAR(100),
+body TEXT,
+user_id INTEGER,
+FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+The foreign key lives in the child table - posts
+it references the primary key id in the users parent table
+the column user_id doesn't have to be named id - **it just needs to refer to users.id**
+
+## KEYPOINT TO NOTE
+
+GORM uses naming conventions to infer relationships unless you explicitly override them.
+if the foreign key field is called User, then it will expect User + ID, that is the convetion.
+
+**validations should NOT have spaces in between them**

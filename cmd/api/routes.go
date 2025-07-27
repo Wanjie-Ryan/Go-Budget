@@ -39,6 +39,11 @@ func (app *Application) routes(handler handler.Handler) {
 	categoryAuthRoutes.PATCH("/update/:id", handler.UpdateCategory)
 
 	app.server.GET("/health", handler.HealthCheck)
+
+	// Budget Routes
+	budgetAuthRoutes := apiGroup.Group("/budget", app.appMiddleware.AuthMiddleware)
+	budgetAuthRoutes.POST("/create", handler.CreateBudget)
+
 	// ORIGINAL
 	// app.server.POST("/register", handler.Registerhandler)
 	// app.server.POST("/login", handler.Loginhandler)

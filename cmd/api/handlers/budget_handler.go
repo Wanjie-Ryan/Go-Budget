@@ -19,10 +19,13 @@ func (h *Handler) CreateBudget(c echo.Context) error {
 	}
 
 	createBudgetPayload := new(request.CreateBudgetRequest)
+	fmt.Println("create budget payload",*createBudgetPayload)
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, createBudgetPayload); err != nil {
+		fmt.Println("error binding body", err)
 		return common.SendBadRequestResponse(c, "Invalid Budget Request Body")
 	}
+
 
 	validationErr := h.ValidateBodyRequest(c, createBudgetPayload)
 	if validationErr != nil {
