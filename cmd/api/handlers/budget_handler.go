@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// function to create a budget
 func (h *Handler) CreateBudget(c echo.Context) error {
 
 	// because we are storing the authenticated user in our context, then we have access to the user and all its properties
@@ -19,13 +20,12 @@ func (h *Handler) CreateBudget(c echo.Context) error {
 	}
 
 	createBudgetPayload := new(request.CreateBudgetRequest)
-	fmt.Println("create budget payload",*createBudgetPayload)
+	fmt.Println("create budget payload", *createBudgetPayload)
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, createBudgetPayload); err != nil {
 		fmt.Println("error binding body", err)
 		return common.SendBadRequestResponse(c, "Invalid Budget Request Body")
 	}
-
 
 	validationErr := h.ValidateBodyRequest(c, createBudgetPayload)
 	if validationErr != nil {
@@ -62,4 +62,29 @@ func (h *Handler) CreateBudget(c echo.Context) error {
 	createdBudget.Categories = categories
 
 	return common.SendSuccessResponse(c, "Budget Created", createdBudget)
+}
+
+// function to list budgets
+
+func (h *Handler) GetAllBudgets(c echo.Context) error {
+
+	// session
+	_, ok := c.Get("user").(models.UserModel)
+	if !ok {
+		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
+	}
+
+	// get the model first
+	var budgetModel []*models.BudgetModel
+	budgetService := services.NewBudgetService(h.DB)
+	paginator := common.NewPagination(budgetModel, c.Request(), h.DB)
+
+	paginatedBudget, err := budgetService.GetAllBudgets(paginator, budgetModel)
+
+	if err != nil {
+		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	return common.SendSuccessResponse(c, "All Budgets", paginatedBudget)
+
 }

@@ -183,17 +183,17 @@ func (cs *CategoryService) UpdateCategory(categoryPayload *request.Categoryreque
 	return &category, nil
 }
 
-func  (cs *CategoryService) GetMultipleCategories(loadedCategories *request.CreateBudgetRequest)([] *models.CategoryModel, error){
+func (cs *CategoryService) GetMultipleCategories(loadedCategories *request.CreateBudgetRequest) ([]*models.CategoryModel, error) {
 
-	var categories [] *models.CategoryModel
+	var categories []*models.CategoryModel
 
 	// the where method of GORM filters the categories by the IDs provided in the loadedcategories.Categories. The IN query checks if the the id is one of the specified IDs in the array
 	result := cs.db.Where("id IN ? ", loadedCategories.Categories).Find(&categories)
 
-	if result.Error != nil{
+	if result.Error != nil {
 		return nil, result.Error
 	}
-	if len(categories) == 0{
+	if len(categories) == 0 {
 		return nil, errors.New("no categories found")
 	}
 	return categories, nil

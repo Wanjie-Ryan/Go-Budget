@@ -6,6 +6,7 @@ import (
 	"time"
 
 	request "github.com/Wanjie-Ryan/Go-Budget/cmd/api/requests"
+	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/Wanjie-Ryan/Go-Budget/internal/models"
 	"gorm.io/gorm"
 )
@@ -78,4 +79,10 @@ func (b *BudgetService) budgetExistByID_Slug_Month_Year(UserID uint, month uint,
 		return nil, result.Error
 	}
 	return singleBudget, nil
+}
+
+// getting all the budgets in the database
+func (b *BudgetService) GetAllBudgets(paginator *common.Pagination, budget []*models.BudgetModel) (common.Pagination, error) {
+	b.DB.Scopes(paginator.Paginate()).Find(&budget)
+	return *paginator, nil
 }

@@ -43,6 +43,7 @@ func (app *Application) routes(handler handler.Handler) {
 	// Budget Routes
 	budgetAuthRoutes := apiGroup.Group("/budget", app.appMiddleware.AuthMiddleware)
 	budgetAuthRoutes.POST("/create", handler.CreateBudget)
+	budgetAuthRoutes.GET("/all", handler.GetAllBudgets)
 
 	// ORIGINAL
 	// app.server.POST("/register", handler.Registerhandler)
