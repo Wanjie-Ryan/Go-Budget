@@ -69,7 +69,8 @@ func (h *Handler) CreateBudget(c echo.Context) error {
 func (h *Handler) GetAllBudgets(c echo.Context) error {
 
 	// session
-	_, ok := c.Get("user").(models.UserModel)
+	user, ok := c.Get("user").(models.UserModel)
+	fmt.Println("user", user.ID)
 	if !ok {
 		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
 	}
@@ -77,7 +78,9 @@ func (h *Handler) GetAllBudgets(c echo.Context) error {
 	// get the model first
 	var budgetModel []*models.BudgetModel
 	budgetService := services.NewBudgetService(h.DB)
-	paginator := common.NewPagination(budgetModel, c.Request(), h.DB)
+	//the items being retreived from the database will have the categories preloaded
+	query := h.DB.Preload("Categories").Scopes(common.WhereUserIDScope(user.ID))
+	paginator := common.NewPagination(budgetModel, c.Request(), query)
 
 	paginatedBudget, err := budgetService.GetAllBudgets(paginator, budgetModel)
 

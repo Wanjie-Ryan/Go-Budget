@@ -84,5 +84,6 @@ func (b *BudgetService) budgetExistByID_Slug_Month_Year(UserID uint, month uint,
 // getting all the budgets in the database
 func (b *BudgetService) GetAllBudgets(paginator *common.Pagination, budget []*models.BudgetModel) (common.Pagination, error) {
 	b.DB.Scopes(paginator.Paginate()).Find(&budget)
+	paginator.Items = budget
 	return *paginator, nil
 }
