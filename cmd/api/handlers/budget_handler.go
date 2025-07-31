@@ -70,7 +70,7 @@ func (h *Handler) GetAllBudgets(c echo.Context) error {
 
 	// session
 	user, ok := c.Get("user").(models.UserModel)
-	fmt.Println("user", user.ID)
+	// fmt.Println("user", user.ID)
 	if !ok {
 		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
 	}
@@ -79,7 +79,8 @@ func (h *Handler) GetAllBudgets(c echo.Context) error {
 	var budgetModel []*models.BudgetModel
 	budgetService := services.NewBudgetService(h.DB)
 	//the items being retreived from the database will have the categories preloaded
-	query := h.DB.Preload("Categories").Scopes(common.WhereUserIDScope(user.ID))
+	// query := h.DB.Preload("Categories").Scopes(common.WhereUserIDScope(user.ID))
+	query := h.DB.Scopes(common.WhereUserIDScope(user.ID))
 	paginator := common.NewPagination(budgetModel, c.Request(), query)
 
 	paginatedBudget, err := budgetService.GetAllBudgets(paginator, budgetModel)
@@ -89,5 +90,68 @@ func (h *Handler) GetAllBudgets(c echo.Context) error {
 	}
 
 	return common.SendSuccessResponse(c, "All Budgets", paginatedBudget)
+
+}
+
+// function to update budget
+func (h *Handler) UpdateBudget(c echo.Context) error {
+
+	User, ok := c.Get("user").(models.UserModel)
+
+	if !ok {
+		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
+	}
+	// bind the budgetID from the parameter first
+
+	budgetId := new(request.IDParamRequest)
+
+	if err := (&echo.DefaultBinder{}).BindPathParams(c, budgetId); err != nil {
+		return common.SendBadRequestResponse(c, "Invalid ID Parameter")
+	}
+
+	// before doing the validation, we need to confirm, check if the budget exists or not, using the id coming from the params
+
+	budgetService := services.NewBudgetService(h.DB)
+	// categoryService := services.NewCategoryService(h.DB)
+
+	budgetByid, err := budgetService.GetBudgetById(budgetId.ID)
+
+	if err != nil {
+		if err.Error() == "budget was not found" {
+			return common.SendNotFoundResponse(c, "Budget Not Found")
+		}
+		return common.SendBadRequestResponse(c, err.Error())
+	}
+
+	if User.ID != budgetByid.UserID {
+		// return common.SendUnauthorizedResponse(c, "Cannot perform this action")
+		return common.SendBadRequestResponse(c, "Cannot perform this action")
+	}
+
+	updateBudgetPayload := new(request.UpdateBudgetRequest)
+
+	if err := (&echo.DefaultBinder{}).BindBody(c, updateBudgetPayload); err != nil {
+		return common.SendBadRequestResponse(c, "Invalid Budget Request Body")
+	}
+
+	validationErr := h.ValidateBodyRequest(c, updateBudgetPayload)
+	if validationErr != nil {
+		return common.SendFailedvalidationResponse(c, validationErr)
+	}
+
+	// by passing the budgetById, we actually pass the budget model retrieved to utilize the preloaded budgets
+
+	budgetUpdate, err := budgetService.UpdateBudget(budgetByid, updateBudgetPayload, budgetId.ID)
+
+	if err != nil {
+		if err.Error() == "budget with the combination of slug, month, year and user_id already exists" {
+			return common.SendBadRequestResponse(c, "Budget with the combination of slug, month, year and user_id already exists")
+		}
+
+		return common.SendServerErrorResponse(c, err.Error())
+
+	}
+
+	return common.SendSuccessResponse(c, "Budget Updated", budgetUpdate)
 
 }

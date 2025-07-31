@@ -15,10 +15,11 @@ type CreateBudgetRequest struct {
 }
 
 type UpdateBudgetRequest struct {
-	Categories []uint64 `json:"categories" validate:"omitempty,dive,min=1"`
-	Amount     float64  `json:"amount" validate:"omitempty,numeric,min=1"`
-	Date       string   `json:"date,omitempty" validate:"omitempty,datetime=2006-01-02"`
-	Title      string   `json:"title" validate:"omitempty,min=2,max=200"`
+	Categories  []uint64 `json:"categories" validate:"omitempty,dive,min=1"`
+	Amount      float64  `json:"amount" validate:"omitempty,numeric,min=1"`
+	Date        string   `json:"date,omitempty" validate:"omitempty,datetime=2006-01-02"`
+	Title       string   `json:"title" validate:"omitempty,min=2,max=200"`
+	Description *string  `json:"description" validate:"omitempty,min=2,max=1000"`
 }
 
 // the omitempty being in the json tag means if the field is empty, don't include it in the json output

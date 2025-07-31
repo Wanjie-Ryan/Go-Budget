@@ -44,6 +44,7 @@ func (app *Application) routes(handler handler.Handler) {
 	budgetAuthRoutes := apiGroup.Group("/budget", app.appMiddleware.AuthMiddleware)
 	budgetAuthRoutes.POST("/create", handler.CreateBudget)
 	budgetAuthRoutes.GET("/all", handler.GetAllBudgets)
+	budgetAuthRoutes.PATCH("/update/:id", handler.UpdateBudget)
 
 	// ORIGINAL
 	// app.server.POST("/register", handler.Registerhandler)
