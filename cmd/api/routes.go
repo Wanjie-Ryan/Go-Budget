@@ -45,6 +45,7 @@ func (app *Application) routes(handler handler.Handler) {
 	budgetAuthRoutes.POST("/create", handler.CreateBudget)
 	budgetAuthRoutes.GET("/all", handler.GetAllBudgets)
 	budgetAuthRoutes.PATCH("/update/:id", handler.UpdateBudget)
+	budgetAuthRoutes.DELETE("/delete/:id", handler.DeleteBudget)
 
 	// ORIGINAL
 	// app.server.POST("/register", handler.Registerhandler)

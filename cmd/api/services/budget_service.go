@@ -180,3 +180,9 @@ func (b *BudgetService) CountForYearAndMonthAndSlugAndUserIDExcludeBudgetID(user
 	return count
 
 }
+
+// function to delete a budget
+func (b *BudgetService) DeleteBudget(budget *models.BudgetModel) error {
+
+	return b.DB.Unscoped().Delete(budget).Error
+}

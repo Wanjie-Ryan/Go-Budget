@@ -157,3 +157,42 @@ func (h *Handler) UpdateBudget(c echo.Context) error {
 	return common.SendSuccessResponse(c, "Budget Updated", budgetUpdate)
 
 }
+
+// function to delete a budget, in the model, the category had a ondelete cascade, meaning that when the budget is deleted, the associated categories too are deleted
+func (h *Handler) DeleteBudget(c echo.Context) error {
+
+	User, ok := c.Get("user").(models.UserModel)
+
+	if !ok {
+		return common.SendUnauthorizedResponse(c, "User Authentication Failed")
+	}
+
+	budgetId := new(request.IDParamRequest)
+
+	if err := (&echo.DefaultBinder{}).BindPathParams(c, budgetId); err != nil {
+		return common.SendBadRequestResponse(c, "Invalid ID Parameter")
+	}
+
+	budgetService := services.NewBudgetService(h.DB)
+
+	singleBudget, err := budgetService.GetBudgetById(budgetId.ID)
+	if err != nil {
+		if err.Error() == "budget was not found" {
+			return common.SendNotFoundResponse(c, err.Error())
+		}
+		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	if User.ID != singleBudget.UserID {
+		return common.SendBadRequestResponse(c, "Cannot perform this action")
+	}
+
+	err = budgetService.DeleteBudget(singleBudget)
+
+	if err != nil {
+		return common.SendServerErrorResponse(c, err.Error())
+	}
+
+	return common.SendSuccessResponse(c, "Budget Deleted", nil)
+
+}
