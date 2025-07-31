@@ -152,6 +152,8 @@ func (h *Handler) UpdateBudget(c echo.Context) error {
 
 	}
 
+	// categories, err := categoryService.GetMultipleCategories(updateBudgetPayload)
+
 	return common.SendSuccessResponse(c, "Budget Updated", budgetUpdate)
 
 }
