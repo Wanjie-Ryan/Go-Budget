@@ -262,3 +262,10 @@ GORM uses naming conventions to infer relationships unless you explicitly overri
 if the foreign key field is called User, then it will expect User + ID, that is the convetion.
 
 **validations should NOT have spaces in between them**
+In GORM Transactions help to:
+
+1. Group multiple operations (mulitple inserts/updates/deletes) into one atomic unit.
+2. Rollback if any operation fails.
+3. Ensure consistency especially when performing complex data modifications
+
+Use db.transaction(...) or manually control with db.Begin(), tx.Commit(), and tx.Rollback()
