@@ -7,7 +7,7 @@
 7. goDotenv for env vars
 8. go-mail for sending mail notifications
 
-cmd --> api implementations are here
+cmd --> api --> api implementations are here
 internal --> DBs, models, things that cannot be reused elsewhere
 main.go --> entry point of go application
 
@@ -25,7 +25,7 @@ go get github.com/labstack/echo/v4
 
 handlers folder --> controllers
 middlewares --> anything regarding middlewares
-request --> houses any struct that is used to constructu reeequest coming into the application
+request --> houses any struct that is used to construct requests coming into the application. (much like a DTO)
 services --> communicate with DB
 common folder houses anything that we want to call globally in our app
 
@@ -171,7 +171,7 @@ used when you expect multiple categories
 Title string `gorm:"index; type:varchar(200);not null"`
 
 The above model declaration tells GORM to create a DB index on the column.
-Indexe make searching/filtering faster, although it DOES NOT enfore uniqueness
+Indexes make searching/filtering faster, although it DOES NOT enfore uniqueness
 
 onDelete cascade --> if a user is deleted, their budgets are automatically deleted
 
