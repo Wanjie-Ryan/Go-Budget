@@ -12,12 +12,12 @@ import (
 )
 
 type CategoryService struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func NewCategoryService(db *gorm.DB) *CategoryService {
 
-	return &CategoryService{db: db}
+	return &CategoryService{DB: db}
 }
 
 // function to get all categories from the DB
@@ -26,10 +26,10 @@ func (cs *CategoryService) GetAllCategories(paginator *common.Pagination, catego
 	// create a variable to hold the retrieved categoryModel data
 	// var categories []*models.CategoryModel
 
-	// result := cs.db.Find(&categories)
+	// result := cs.DB.Find(&categories)
 
 	// this is simply calling the method to fill the categories slice and move on
-	cs.db.Scopes(paginator.Paginate()).Find(&categories)
+	cs.DB.Scopes(paginator.Paginate()).Find(&categories)
 
 	// if result.Error != nil {
 	// 	// return nil, errors.New("failed to fetch categories")
@@ -60,13 +60,13 @@ func (cs *CategoryService) Createcategory(categoryPayload *request.Categoryreque
 		IsCustom: categoryPayload.IsCustom,
 	}
 
-	// result := cs.db.Create(&categoryModelCreated)
+	// result := cs.DB.Create(&categoryModelCreated)
 
 	// because the slug and the name of the categories are supposed to be unique, then we should first check if they exist in the DB, if they DO NOT exist, create them, if they exist, it loads into object, therefore we will not use the .create method directly, we will find the slug in the DB that matches the slug that was created
 	//.firstorcreate, either gets the first slug that matches the passed slug or creates it
 	// the query below will be checking where the slug and the name are equal to the slug and the name that was created
 
-	result := cs.db.Where(models.CategoryModel{Slug: slug, Name: categoryModelCreated.Name}).FirstOrCreate(&categoryModelCreated)
+	result := cs.DB.Where(models.CategoryModel{Slug: slug, Name: categoryModelCreated.Name}).FirstOrCreate(&categoryModelCreated)
 
 	if result.Error != nil {
 		fmt.Println(result.Error.Error())
@@ -84,7 +84,7 @@ func (cs *CategoryService) Createcategory(categoryPayload *request.Categoryreque
 // function to delete a category
 func (cs *CategoryService) DeleteCategory(id uint) error {
 
-	// result := cs.db.Where(models.CategoryModel{Name:category.Name}).Delete(&models.CategoryModel{})
+	// result := cs.DB.Where(models.CategoryModel{Name:category.Name}).Delete(&models.CategoryModel{})
 	// if result.Error !=nil{
 	// 	return result.Error
 	// }
@@ -93,7 +93,7 @@ func (cs *CategoryService) DeleteCategory(id uint) error {
 
 	var category models.CategoryModel
 
-	singleCategoryResult := cs.db.First(&category, id)
+	singleCategoryResult := cs.DB.First(&category, id)
 
 	if singleCategoryResult.Error != nil {
 		if errors.Is(singleCategoryResult.Error, gorm.ErrRecordNotFound) {
@@ -103,7 +103,7 @@ func (cs *CategoryService) DeleteCategory(id uint) error {
 	}
 
 	// without the unscoped, it will only do a soft delete, but with the unscoped, it will permanently delete from the DB
-	result := cs.db.Unscoped().Delete(&category)
+	result := cs.DB.Unscoped().Delete(&category)
 	fmt.Println("result after deleting", *result)
 	return result.Error
 
@@ -113,7 +113,7 @@ func (cs *CategoryService) DeleteCategory(id uint) error {
 func (cs *CategoryService) GetSingleCategory(d uint) (*models.CategoryModel, error) {
 	var category models.CategoryModel
 
-	result := cs.db.First(&category, d)
+	result := cs.DB.First(&category, d)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -141,7 +141,7 @@ func (cs *CategoryService) GetSingleCategory(d uint) (*models.CategoryModel, err
 // 	// retrievedCategory.Slug = slug
 // 	// retrievedCategory.IsCustom = categoryPayload.IsCustom
 
-// 	// result := cs.db.Save(retrievedCategory)
+// 	// result := cs.DB.Save(retrievedCategory)
 
 // 	modelToUpdate := models.CategoryModel{
 // 		Name:     categoryPayload.Name,
@@ -149,7 +149,7 @@ func (cs *CategoryService) GetSingleCategory(d uint) (*models.CategoryModel, err
 // 		IsCustom: categoryPayload.IsCustom,
 // 	}
 
-// 	result := cs.db.Model(&models.CategoryModel{}).Where("id = ?", id).Updates(modelToUpdate)
+// 	result := cs.DB.Model(&models.CategoryModel{}).Where("id = ?", id).Updates(modelToUpdate)
 
 // 	if result.Error != nil {
 // 		fmt.Println(result.Error.Error())
@@ -163,7 +163,7 @@ func (cs *CategoryService) GetSingleCategory(d uint) (*models.CategoryModel, err
 func (cs *CategoryService) UpdateCategory(categoryPayload *request.Categoryrequest, id uint) (*models.CategoryModel, error) {
 	// Fetch the existing category by ID
 	var category models.CategoryModel
-	result := cs.db.First(&category, id)
+	result := cs.DB.First(&category, id)
 	if result.Error != nil {
 		return nil, result.Error // Return the error if not found
 	}
@@ -175,7 +175,7 @@ func (cs *CategoryService) UpdateCategory(categoryPayload *request.Categoryreque
 	category.IsCustom = categoryPayload.IsCustom // Update the 'IsCustom' field
 
 	// Save the updated category back to the database
-	updateResult := cs.db.Save(&category)
+	updateResult := cs.DB.Save(&category)
 	if updateResult.Error != nil {
 		return nil, updateResult.Error // Return error if save fails
 	}
@@ -188,7 +188,7 @@ func (cs *CategoryService) GetMultipleCategories(loadedCategories *request.Creat
 	var categories []*models.CategoryModel
 
 	// the where method of GORM filters the categories by the IDs provided in the loadedcategories.Categories. The IN query checks if the the id is one of the specified IDs in the array
-	result := cs.db.Where("id IN ? ", loadedCategories.Categories).Find(&categories)
+	result := cs.DB.Where("id IN ? ", loadedCategories.Categories).Find(&categories)
 
 	if result.Error != nil {
 		return nil, result.Error

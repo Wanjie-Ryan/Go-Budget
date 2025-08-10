@@ -8,6 +8,7 @@ import (
 	"github.com/Wanjie-Ryan/Go-Budget/common"
 	"github.com/Wanjie-Ryan/Go-Budget/internal/models"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 // function to create a budget
@@ -20,10 +21,10 @@ func (h *Handler) CreateBudget(c echo.Context) error {
 	}
 
 	createBudgetPayload := new(request.CreateBudgetRequest)
-	fmt.Println("create budget payload", *createBudgetPayload)
+	// fmt.Println("create budget payload", *createBudgetPayload)
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, createBudgetPayload); err != nil {
-		fmt.Println("error binding body", err)
+		// fmt.Println("error binding body", err)
 		return common.SendBadRequestResponse(c, "Invalid Budget Request Body")
 	}
 
@@ -34,17 +35,6 @@ func (h *Handler) CreateBudget(c echo.Context) error {
 
 	budgetService := services.NewBudgetService(h.DB)
 	categoryService := services.NewCategoryService(h.DB)
-
-	createdBudget, err := budgetService.CreateBudget(createBudgetPayload, user.ID)
-
-	if err != nil {
-		fmt.Println("error creating budget", err)
-		return common.SendServerErrorResponse(c, err.Error())
-	}
-
-	// associating the categories to the budget
-
-	// categories, err := categoryService.GetMultipleCategories(createBudgetPayload.Categories)
 	categories, err := categoryService.GetMultipleCategories(createBudgetPayload)
 
 	if err != nil {
@@ -52,12 +42,45 @@ func (h *Handler) CreateBudget(c echo.Context) error {
 		return common.SendServerErrorResponse(c, err.Error())
 	}
 
-	err = budgetService.DB.Model(createdBudget).Association("Categories").Replace(categories)
+	createdBudget := &models.BudgetModel{}
 
+	// START OF PERFORMING TRANSACTIONS
+	err = h.DB.Transaction(func(tx *gorm.DB) error {
+
+		// to do transactions in here, you have to utilize the tx, not the db you instantiated, therefore re-assign the DB to the tx
+
+		budgetService.DB = tx
+		categoryService.DB = tx
+
+		createdBudget, err = budgetService.CreateBudget(createBudgetPayload, user.ID)
+
+		if err != nil {
+			fmt.Println("error creating budget", err)
+			return common.SendServerErrorResponse(c, err.Error())
+		}
+
+		err = tx.Model(createdBudget).Association("Categories").Replace(categories)
+
+		if err != nil {
+			fmt.Println("error associating categories to budget", err)
+			return common.SendServerErrorResponse(c, err.Error())
+		}
+
+		// fmt.Println("transaction", tx)
+		return nil
+	})
+
+	// END OF PERFORMING TRANSACTIONS
+
+	// ERROR FOR CAPTURING THE ERROR THAT HAPPENS DURING THE TRANSACTION
 	if err != nil {
-		fmt.Println("error associating categories to budget", err)
 		return common.SendServerErrorResponse(c, err.Error())
 	}
+	// ERROR FOR CAPTURING THE ERROR THAT HAPPENS DURING THE TRANSACTION
+
+	// associating the categories to the budget
+
+	// categories, err := categoryService.GetMultipleCategories(createBudgetPayload.Categories)
 
 	createdBudget.Categories = categories
 
