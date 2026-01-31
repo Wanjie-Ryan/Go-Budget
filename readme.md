@@ -49,7 +49,7 @@ c.N++
 
 // Pointer receiver, works on the original struct
 // change here persist after the call returns.
-func (c \*Counter) IncrementPointer(){
+func (c *Counter) IncrementPointer(){
 c.N++
 }
 
