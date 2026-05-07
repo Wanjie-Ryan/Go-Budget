@@ -1,4 +1,4 @@
-1. Echo framework
+1. Echo framework.
 2. GORM for migration and DB process
 3. Golang-jwt for auth
 4. robfig/cron package for managing cron jobs
